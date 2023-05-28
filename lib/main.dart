@@ -74,9 +74,11 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Display()
-      )
+      body:
+        ConstrainedBox(
+          constraints: BoxConstraints.expand(),
+          child: Display(),
+        )
     );
   }
 }

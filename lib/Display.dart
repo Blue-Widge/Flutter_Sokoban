@@ -10,7 +10,7 @@ class Display extends StatefulWidget
 
 class _Display extends State<Display>
 {
-  Widget? toDisplay;
+  late Widget toDisplay;
 
   void newGameCallBack()
   {
@@ -40,9 +40,7 @@ class _Display extends State<Display>
   @override
   Widget build(BuildContext context)
   {
-    return Container(
-      child: toDisplay,
-    );
+      return toDisplay;
   }
 }
 
@@ -51,21 +49,43 @@ class Menu extends StatelessWidget
   VoidCallback newGameCallBack;
   VoidCallback continueCallBack;
   VoidCallback selectLevelCallBack;
+
   Menu(this.newGameCallBack, this.continueCallBack, this.selectLevelCallBack);
 
   @override
   Widget build(BuildContext context)
   {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(onPressed: newGameCallBack, child: const Text("New game")),
-          SizedBox(height: 10),
-          ElevatedButton(onPressed: continueCallBack, child: const Text("Continue")),
-          SizedBox(height: 10),
-          ElevatedButton(onPressed: selectLevelCallBack, child: const Text("Select level")),
-
-        ]);
+    return Container(
+        color: Colors.black26,
+        child:
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FloatingActionButton.extended(
+                onPressed: newGameCallBack,
+                label: const Text("New game"),
+                icon: const Icon(Icons.add),
+                backgroundColor: Colors.deepOrangeAccent,
+                foregroundColor: Colors.white,
+              ),
+              const SizedBox(height: 10),
+              FloatingActionButton.extended(
+                onPressed: continueCallBack,
+                label: const Text("Continue"),
+                icon: const Icon(Icons.play_arrow),
+                backgroundColor: Colors.deepOrangeAccent,
+                foregroundColor: Colors.white,
+              ),
+              const SizedBox(height: 10),
+              FloatingActionButton.extended(
+                onPressed: continueCallBack,
+                label: const Text("Select level"),
+                icon: const Icon(Icons.checklist_rounded),
+                backgroundColor: Colors.deepOrangeAccent,
+                foregroundColor: Colors.white,
+              ),
+            ])
+    );
   }
 
 }
