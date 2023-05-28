@@ -18,11 +18,9 @@ class Level
   {
     blocsGrid = List<List<Entity>>.generate(height,
             (column) => List<Entity>.generate(width,
-                    (row) => Entity(
-                        posX : column,
-                        posY: row,
-                        bloc: levelGrid[row][column],
-                        currentLevel: this)
+                    (row) => (levelGrid[row][column] == BlocType.BOX) ?
+                        MovableEntity(posX: column, posY: row, bloc: levelGrid[row][column], currentLevel: this) :
+                        Entity(posX : column, posY: row, bloc: levelGrid[row][column], currentLevel: this)
             )
     );
   }
