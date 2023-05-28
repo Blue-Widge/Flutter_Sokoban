@@ -120,18 +120,22 @@ class MovableEntity extends Entity
     if (direction == DirectionType.UP)
     {
       currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY + 1, posY + 1, bloc);
+      currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY, posY, BlocType.GROUND);
     }
     if (direction == DirectionType.RIGHT)
     {
       currentLevel.levelGrid[posX + 1] = currentLevel.levelGrid[posX + 1].replaceRange(posY, posY, bloc);
+      currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY, posY, BlocType.GROUND);
     }
     if (direction == DirectionType.DOWN)
     {
       currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY - 1, posY - 1, bloc);
+      currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY, posY, BlocType.GROUND);
     }
     if (direction == DirectionType.LEFT)
     {
       currentLevel.levelGrid[posX - 1] = currentLevel.levelGrid[posX - 1].replaceRange(posY, posY, bloc);
+      currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY, posY, BlocType.GROUND);
     }
   }
 }
