@@ -17,10 +17,10 @@ class Level
   void _initializeGrid()
   {
     blocsGrid = List<List<Entity>>.generate(height,
-            (column) => List<Entity>.generate(width,
-                    (row) => (levelGrid[row][column] == BlocType.BOX || levelGrid[row][column] == BlocType.GROUND) ?
-                        MovableEntity(posX: column, posY: row, bloc: levelGrid[row][column], currentLevel: this) :
-                        Entity(posX : column, posY: row, bloc: levelGrid[row][column], currentLevel: this)
+            (row) => List<Entity>.generate(width,
+                    (column) => (levelGrid[row][column] == BlocType.BOX || levelGrid[row][column] == BlocType.GROUND) ?
+                        MovableEntity(posX: row, posY: column, bloc: levelGrid[row][column], currentLevel: this) :
+                        Entity(posX : row, posY: column, bloc: levelGrid[row][column], currentLevel: this)
             )
     );
   }
