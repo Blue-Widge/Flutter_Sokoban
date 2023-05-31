@@ -34,7 +34,7 @@ class Level
 class LevelManager
 {
   List<Level>? levels;
-  int currentLevel = 0;
+  int currentLevel = 1;
 
   LevelManager({required String levelsPath})
   {
@@ -51,7 +51,7 @@ class LevelManager
     }
   }
 
-  void setLevel(int levelNumber) => currentLevel = levelNumber - 1;
+  void setLevel(int levelNumber) => currentLevel = levelNumber;
 
   Future<void> _parseLevels(String levelsPath) async
   {
@@ -70,9 +70,9 @@ class LevelManager
   {
     setLevel(levelNumber);
 
-    if (!_levels[currentLevel].initialized)
+    if (!levels![currentLevel].initialized)
     {
-        _levels[currentLevel].initializeGrid();
+        levels![currentLevel].initializeGrid();
     }
   }
 }

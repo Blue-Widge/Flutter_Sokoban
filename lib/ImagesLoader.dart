@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'dart:async';
 
-import 'package:sokoban/Levels.dart';
+import 'Levels.dart';
 
 //La classe contenant les images chargées en mémoire
 class Ressources {
@@ -23,7 +23,7 @@ class Ressources {
     player = await _loadImage('assets/sprites/droite_0.png');
     crate = await _loadImage('assets/sprites/caisse.png');
     hole = await _loadImage('assets/sprites/trou.png');
-    wall = await _loadImage('assets/sprites/trou.png');
+    wall = await _loadImage('assets/sprites/bloc.png');
     ground = await _loadImage('assets/sprites/trou.png');
     objective = await _loadImage('assets/sprites/cible.png');
     prepared = true;
@@ -53,9 +53,9 @@ class MyPainter extends CustomPainter {
   double height;
   double width;
   Ressources ressources;
-  LevelManager levelManager = LevelManager(levelsPath: 'assets/levels.json');
+  LevelManager levelManager;
 
-  MyPainter(this.height, this.width, this.ressources);
+  MyPainter(this.height, this.width, this.ressources, this.levelManager);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -71,8 +71,8 @@ class MyPainter extends CustomPainter {
     {
       for(int j = 0; j < currentLevel.blocsGrid[i].length; ++j)
       {
-        double xLocation = (j * height/currentLevel.height) as double;
-        double yLocation = (i * width/currentLevel.width) as double;
+        double xLocation = (j * 50) as double;
+        double yLocation = (i * 50) as double;
         Rect destRect = Rect.fromLTWH(xLocation, yLocation, 50, 50);
 
         switch(currentLevel.blocsGrid[i][j].bloc)
@@ -82,9 +82,6 @@ class MyPainter extends CustomPainter {
             break;
           case BlocType.BOX:
             img = ressources.crate;
-            break;
-          case BlocType.HOLE:
-            img = ressources.hole;
             break;
           case BlocType.WALL:
             img = ressources.wall;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ImagesLoader.dart';
+import 'Levels.dart';
 class Display extends StatefulWidget
 {
 
@@ -10,6 +11,7 @@ class Display extends StatefulWidget
 
 class _Display extends State<Display>
 {
+  late LevelManager levelManager;
   late Widget toDisplay;
   Ressources ressources = Ressources(); //Sert au chargement des images en mémoire
 
@@ -21,7 +23,10 @@ class _Display extends State<Display>
   void newGameCallBack()
   {
     setState(() {
-      toDisplay = Container(child: Text("test"),);
+      levelManager.chargeLevel(0);
+      toDisplay = CustomPaint(
+          painter:MyPainter(MediaQuery.of(context).size.height-56-24, MediaQuery.of(context).size.width, ressources, levelManager)
+      );
     });
   }
   void continueCallBack()
@@ -33,15 +38,14 @@ class _Display extends State<Display>
   void selectLevelCallBack()
   {
     setState(() {
-      toDisplay = CustomPaint(
-          painter:MyPainter(MediaQuery.of(context).size.height-56-24, MediaQuery.of(context).size.width, ressources)
-      );
+      toDisplay = Container(child: Text("test"),);
     });
   }
   @override
   void initState()
   {
     super.initState();
+    levelManager = LevelManager(levelsPath: 'assets/levels.json');
     toDisplay = Menu(newGameCallBack, continueCallBack, selectLevelCallBack);
   }
 
