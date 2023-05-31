@@ -73,8 +73,7 @@ class MyPainter extends CustomPainter {
       {
         double xLocation = (j * height/currentLevel.height) as double;
         double yLocation = (i * width/currentLevel.width) as double;
-        Rect destRect = Rect.fromLTWH(xLocation, yLocation, height/currentLevel.height, width/currentLevel.width);
-        //Rect destRect = Rect.fromLTWH(xLocation, yLocation, height/currentLevel.height, width/currentLevel.width);
+        Rect destRect = Rect.fromLTWH(xLocation, yLocation, 50, 50);
 
         switch(currentLevel.blocsGrid[i][j].bloc)
         {

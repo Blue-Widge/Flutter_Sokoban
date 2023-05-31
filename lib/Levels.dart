@@ -1,5 +1,4 @@
 import 'dart:convert';
-//import "dart:ffi";
 import 'package:flutter/services.dart';
 
 class Level
@@ -7,22 +6,28 @@ class Level
   int height;
   int width;
   List<String> levelGrid;
+  bool initialized = false;
   late List<List<Entity>> blocsGrid;
 
-  Level({required this.height, required this.width, required this.levelGrid})
-  {
-    _initializeGrid();
-  }
+  Level({required this.height, required this.width, required this.levelGrid});
 
-  void _initializeGrid()
+  void initializeGrid()
   {
-    blocsGrid = List<List<Entity>>.generate(height,
-            (row) => List<Entity>.generate(levelGrid[row].length,
-                (column) => (levelGrid[row][column] == BlocType.BOX || levelGrid[row][column] == BlocType.GROUND) ?
-            MovableEntity(posX: row, posY: column, bloc: levelGrid[row][column], currentLevel: this) :
-            Entity(posX : row, posY: column, bloc: levelGrid[row][column], currentLevel: this)
-        )
-    );
+    try
+    {
+      blocsGrid = List<List<Entity>>.generate(height,
+              (row) => List<Entity>.generate(levelGrid[row].length,
+                  (column) => (levelGrid[row][column] == BlocType.BOX) ?
+              MovableEntity(posX: row, posY: column, bloc: levelGrid[row][column], currentLevel: this) :
+              Entity(posX : row, posY: column, bloc: levelGrid[row][column], currentLevel: this)
+          )
+      );
+      initialized = true;
+    }
+    catch(e)
+    {
+      print("Couldn't load level, try checking the json - ERROR : $e");
+    }
   }
 }
 
@@ -60,6 +65,16 @@ class LevelManager
       levelGrid: List<String>.from(level['lignes'])
     )));
   }
+
+  void chargeLevel(int levelNumber)
+  {
+    setLevel(levelNumber);
+
+    if (!_levels[currentLevel].initialized)
+    {
+        _levels[currentLevel].initializeGrid();
+    }
+  }
 }
 
 class Entity
@@ -80,7 +95,7 @@ class MovableEntity extends Entity
 
   @override bool moveable(int direction)
   {
-    var obstacle = BlocType.HOLE;
+    var obstacle = BlocType.WALL;
 
     if (direction == DirectionType.UP)
     {
@@ -106,7 +121,7 @@ class MovableEntity extends Entity
       if (obstacle == BlocType.BOX)
         return currentLevel.blocsGrid[posX - 1][posY].moveable(direction);
     }
-    if ( obstacle == BlocType.WALL || obstacle == BlocType.HOLE)
+    if ( obstacle == BlocType.WALL || obstacle == BlocType.OBJECTIVE)
       return false;
 
     return true;
@@ -146,8 +161,8 @@ class BlocType
   static const String GROUND = ' ';
   static const String WALL = '#';
   static const String BOX = '\$';
-  static const String HOLE = '.';
-  static const String OBJECTIVE = '@';
+  static const String OBJECTIVE = '.';
+  static const String SPAWNPOINT = '@';
 }
 
 class DirectionType
