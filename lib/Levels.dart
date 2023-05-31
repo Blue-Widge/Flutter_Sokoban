@@ -17,17 +17,17 @@ class Level
     {
       blocsGrid = List<List<Entity>>.generate(height,
               (row) => List<Entity>.generate(levelGrid[row].length,
-                  (column) => (levelGrid[row][column] == BlocType.BOX || levelGrid[row][column] == BlocType.GROUND) ?
+                  (column) => (levelGrid[row][column] == BlocType.BOX) ?
               MovableEntity(posX: row, posY: column, bloc: levelGrid[row][column], currentLevel: this) :
               Entity(posX : row, posY: column, bloc: levelGrid[row][column], currentLevel: this)
           )
       );
+      initialized = true;
     }
     catch(e)
     {
       print("Couldn't load level, try checking the json - ERROR : $e");
     }
-    initialized = true;
   }
 }
 
@@ -74,8 +74,6 @@ class LevelManager
     {
         _levels[currentLevel].initializeGrid();
     }
-
-    //charge level
   }
 }
 
@@ -97,7 +95,7 @@ class MovableEntity extends Entity
 
   @override bool moveable(int direction)
   {
-    var obstacle = BlocType.HOLE;
+    var obstacle = BlocType.WALL;
 
     if (direction == DirectionType.UP)
     {
@@ -123,7 +121,7 @@ class MovableEntity extends Entity
       if (obstacle == BlocType.BOX)
         return currentLevel.blocsGrid[posX - 1][posY].moveable(direction);
     }
-    if ( obstacle == BlocType.WALL || obstacle == BlocType.HOLE)
+    if ( obstacle == BlocType.WALL || obstacle == BlocType.OBJECTIVE)
       return false;
 
     return true;
@@ -159,18 +157,18 @@ class MovableEntity extends Entity
 
 class BlocType
 {
-  static String EMPTY = ' ';
-  static String GROUND = ' ';
-  static String WALL = '#';
-  static String BOX = '\$';
-  static String HOLE = '.';
-  static String OBJECTIVE = '@';
+  static const String EMPTY = ' ';
+  static const String GROUND = ' ';
+  static const String WALL = '#';
+  static const String BOX = '\$';
+  static const String OBJECTIVE = '.';
+  static const String SPAWNPOINT = '@';
 }
 
 class DirectionType
 {
-  static int UP = 0;
-  static int RIGHT = 1;
-  static int DOWN = 2;
-  static int LEFT = 3;
+  static const int UP = 0;
+  static const int RIGHT = 1;
+  static const int DOWN = 2;
+  static const int LEFT = 3;
 }
