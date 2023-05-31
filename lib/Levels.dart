@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:ffi';
+//import "dart:ffi";
 import 'package:flutter/services.dart';
 
 class Level
@@ -17,18 +17,18 @@ class Level
   void _initializeGrid()
   {
     blocsGrid = List<List<Entity>>.generate(height,
-            (column) => List<Entity>.generate(width,
-                    (row) => (levelGrid[row][column] == BlocType.BOX || levelGrid[row][column] == BlocType.GROUND) ?
-                        MovableEntity(posX: column, posY: row, bloc: levelGrid[row][column], currentLevel: this) :
-                        Entity(posX : column, posY: row, bloc: levelGrid[row][column], currentLevel: this)
-            )
+            (row) => List<Entity>.generate(levelGrid[row].length,
+                (column) => (levelGrid[row][column] == BlocType.BOX || levelGrid[row][column] == BlocType.GROUND) ?
+            MovableEntity(posX: row, posY: column, bloc: levelGrid[row][column], currentLevel: this) :
+            Entity(posX : row, posY: column, bloc: levelGrid[row][column], currentLevel: this)
+        )
     );
   }
 }
 
 class LevelManager
 {
-  late List<Level> _levels;
+  List<Level>? levels;
   int currentLevel = 0;
 
   LevelManager({required String levelsPath})
@@ -54,7 +54,7 @@ class LevelManager
 
     final data = await json.decode(response);
 
-    _levels = List<Level>.from(data.map((level) => Level(
+    levels = List<Level>.from(data.map((level) => Level(
       height:level['hauteur'],
       width:level['largeur'],
       levelGrid: List<String>.from(level['lignes'])
@@ -142,18 +142,18 @@ class MovableEntity extends Entity
 
 class BlocType
 {
-  static String EMPTY = ' ';
-  static String GROUND = ' ';
-  static String WALL = '#';
-  static String BOX = '\$';
-  static String HOLE = '.';
-  static String OBJECTIVE = '@';
+  static const String EMPTY = ' ';
+  static const String GROUND = ' ';
+  static const String WALL = '#';
+  static const String BOX = '\$';
+  static const String HOLE = '.';
+  static const String OBJECTIVE = '@';
 }
 
 class DirectionType
 {
-  static int UP = 0;
-  static int RIGHT = 1;
-  static int DOWN = 2;
-  static int LEFT = 3;
+  static const int UP = 0;
+  static const int RIGHT = 1;
+  static const int DOWN = 2;
+  static const int LEFT = 3;
 }
