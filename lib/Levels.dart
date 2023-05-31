@@ -10,12 +10,41 @@ class Level
   bool initialized = false;
   late List<List<Entity>> blocsGrid;
 
-  Level({required this.height, required this.width, required this.levelGrid});
+  Level({required this.height, required this.width, required this.levelGrid}) {initializeGrid();}
+
+
+  void TEMP_SHOWLEVEL()
+  {
+    for(int i = 0; i < height; ++i)
+      print(levelGrid[i]);
+  }
 
   void initializeGrid()
   {
     try
     {
+      if (!initialized)
+      {
+        for(int i = 0; i < height; ++i)
+        {
+          bool inside = false;
+          bool wallPrevious = false;
+          for(int j = 0; j < levelGrid[i].length; ++j)
+          {
+            if (!(levelGrid[i][j] == BlocType.WALL))
+            {
+              inside = inside ^ wallPrevious;
+              if (inside)
+              {
+                String char = levelGrid[i][j] == BlocType.EMPTY ? BlocType.GROUND : levelGrid[i][j];
+                levelGrid[i] = levelGrid[i].substring(0, j) + char + levelGrid[i].substring(j + 1);
+              }
+            }
+            wallPrevious = levelGrid[i][j] == BlocType.WALL;
+          }
+        }
+      }
+
       blocsGrid = List<List<Entity>>.generate(height,
               (row) => List<Entity>.generate(levelGrid[row].length,
                   (column) => (levelGrid[row][column] == BlocType.BOX) ?
@@ -32,6 +61,12 @@ class Level
       print("Couldn't load level, try checking the json - ERROR : $e");
     }
   }
+
+  void resetLevel()
+  {
+    initializeGrid();
+  }
+
 }
 
 class LevelManager
@@ -46,6 +81,7 @@ class LevelManager
       _parseLevels(levelsPath).then((_)
       {
         print("Successfully opened the json file");
+        _levels[0].TEMP_SHOWLEVEL();
       });
     }
     catch(e)
@@ -83,7 +119,7 @@ class LevelManager
 class BlocType
 {
   static const String EMPTY = ' ';
-  static const String GROUND = ' ';
+  static const String GROUND = '_';
   static const String WALL = '#';
   static const String BOX = '\$';
   static const String OBJECTIVE = '.';

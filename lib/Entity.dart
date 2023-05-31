@@ -13,14 +13,10 @@ class Entity
   bool moveEntity(int direction) => false;
 }
 
-class PlayerEntity extends Entity
-{
-  PlayerEntity({required super.posX, required super.posY, required super.bloc, required super.currentLevel});
-
-}
-
 class MovableEntity extends Entity
 {
+  bool onObjective = false;
+
   MovableEntity({required super.posX, required super.posY, required super.bloc, required super.currentLevel, super.oversteppable});
 
   bool moveable(int direction)
@@ -51,32 +47,35 @@ class MovableEntity extends Entity
     if (!moveable(direction))
       return false;
 
-    Entity temp;
-
+    bool gotOnObjective = false;
     if (direction == DirectionType.UP)
     {
-      temp = currentLevel.blocsGrid[posX][posY + 1];
-      currentLevel.blocsGrid[posX][posY + 1] = currentLevel.blocsGrid[posX][posY];
-      currentLevel.blocsGrid[posX][posY] = temp;
+      gotOnObjective = currentLevel.blocsGrid[posX][posY + 1].bloc == BlocType.OBJECTIVE;
+      currentLevel.blocsGrid[posX][posY + 1] = this;
     }
     if (direction == DirectionType.RIGHT)
     {
-      temp = currentLevel.blocsGrid[posX + 1][posY];
-      currentLevel.blocsGrid[posX + 1][posY] = currentLevel.blocsGrid[posX][posY];
-      currentLevel.blocsGrid[posX][posY] = temp;
+      gotOnObjective = currentLevel.blocsGrid[posX + 1][posY].bloc == BlocType.OBJECTIVE;
+      currentLevel.blocsGrid[posX + 1][posY] = this;
     }
     if (direction == DirectionType.DOWN)
     {
-      temp = currentLevel.blocsGrid[posX][posY - 1];
-      currentLevel.blocsGrid[posX][posY - 1] = currentLevel.blocsGrid[posX][posY];
-      currentLevel.blocsGrid[posX][posY] = temp;
+      gotOnObjective = currentLevel.blocsGrid[posX][posY - 1].bloc == BlocType.OBJECTIVE;
+      currentLevel.blocsGrid[posX][posY - 1] = this;
     }
     if (direction == DirectionType.LEFT)
     {
-      temp = currentLevel.blocsGrid[posX - 1][posY];
-      currentLevel.blocsGrid[posX - 1][posY] = currentLevel.blocsGrid[posX][posY];
-      currentLevel.blocsGrid[posX][posY] = temp;
+      gotOnObjective = currentLevel.blocsGrid[posX - 1][posY].bloc == BlocType.OBJECTIVE;
+      currentLevel.blocsGrid[posX - 1][posY] = this;
     }
+    currentLevel.blocsGrid[posX][posY] = Entity(posX: posX, posY: posY, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
+    onObjective = gotOnObjective;
     return true;
   }
+}
+
+class PlayerEntity extends MovableEntity
+{
+  PlayerEntity({required super.posX, required super.posY, required super.bloc, required super.currentLevel});
+
 }
