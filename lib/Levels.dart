@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'Entity.dart';
 
 class Level
 {
@@ -18,8 +19,10 @@ class Level
       blocsGrid = List<List<Entity>>.generate(height,
               (row) => List<Entity>.generate(levelGrid[row].length,
                   (column) => (levelGrid[row][column] == BlocType.BOX) ?
-              MovableEntity(posX: row, posY: column, bloc: levelGrid[row][column], currentLevel: this) :
-              Entity(posX : row, posY: column, bloc: levelGrid[row][column], currentLevel: this)
+                    MovableEntity(posX: row, posY: column, bloc: BlocType.BOX, currentLevel: this) :
+                    (levelGrid[row][column] == BlocType.SPAWNPOINT) ?
+                      PlayerEntity(posX: row, posY: column, bloc: BlocType.SPAWNPOINT, currentLevel: this) :
+                      Entity(posX : row, posY: column, bloc: levelGrid[row][column], currentLevel: this, oversteppable: (levelGrid[row][column] == BlocType.GROUND))
           )
       );
       initialized = true;
@@ -51,7 +54,7 @@ class LevelManager
     }
   }
 
-  void setLevel(int levelNumber) => currentLevel = levelNumber - 1;
+  void setLevel(int levelNumber) => currentLevel = levelNumber;
 
   Future<void> _parseLevels(String levelsPath) async
   {
@@ -73,84 +76,6 @@ class LevelManager
     if (!_levels[currentLevel].initialized)
     {
         _levels[currentLevel].initializeGrid();
-    }
-  }
-}
-
-class Entity
-{
-  int posX;
-  int posY;
-  String bloc;
-  Level currentLevel;
-
-  Entity({required this.posX, required this.posY, required this.bloc, required this.currentLevel});
-
-  bool moveable(int direction) => false;
-}
-
-class MovableEntity extends Entity
-{
-  MovableEntity({required super.posX, required super.posY, required super.bloc, required super.currentLevel});
-
-  @override bool moveable(int direction)
-  {
-    var obstacle = BlocType.WALL;
-
-    if (direction == DirectionType.UP)
-    {
-      obstacle = currentLevel.levelGrid[posX][posY + 1];
-      if (obstacle == BlocType.BOX)
-        return currentLevel.blocsGrid[posX][posY + 1].moveable(direction);
-    }
-    if (direction == DirectionType.RIGHT)
-    {
-      obstacle = currentLevel.levelGrid[posX + 1][posY];
-      if (obstacle == BlocType.BOX)
-        return currentLevel.blocsGrid[posX + 1][posY].moveable(direction);
-    }
-    if (direction == DirectionType.DOWN)
-    {
-      obstacle = currentLevel.levelGrid[posX][posY - 1];
-      if (obstacle == BlocType.BOX)
-        return currentLevel.blocsGrid[posX][posY - 1].moveable(direction);
-    }
-    if (direction == DirectionType.LEFT)
-    {
-      obstacle = currentLevel.levelGrid[posX - 1][posY];
-      if (obstacle == BlocType.BOX)
-        return currentLevel.blocsGrid[posX - 1][posY].moveable(direction);
-    }
-    if ( obstacle == BlocType.WALL || obstacle == BlocType.OBJECTIVE)
-      return false;
-
-    return true;
-  }
-
-  void moveEntity(int direction)
-  {
-    if (!moveable(direction))
-      return;
-
-    if (direction == DirectionType.UP)
-    {
-      currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY + 1, posY + 1, bloc);
-      currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY, posY, BlocType.GROUND);
-    }
-    if (direction == DirectionType.RIGHT)
-    {
-      currentLevel.levelGrid[posX + 1] = currentLevel.levelGrid[posX + 1].replaceRange(posY, posY, bloc);
-      currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY, posY, BlocType.GROUND);
-    }
-    if (direction == DirectionType.DOWN)
-    {
-      currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY - 1, posY - 1, bloc);
-      currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY, posY, BlocType.GROUND);
-    }
-    if (direction == DirectionType.LEFT)
-    {
-      currentLevel.levelGrid[posX - 1] = currentLevel.levelGrid[posX - 1].replaceRange(posY, posY, bloc);
-      currentLevel.levelGrid[posX] = currentLevel.levelGrid[posX].replaceRange(posY, posY, BlocType.GROUND);
     }
   }
 }
