@@ -71,8 +71,8 @@ class Level
 
 class LevelManager
 {
-  late List<Level> _levels;
-  int currentLevel = 0;
+  List<Level>? levels;
+  int currentLevel = 1;
 
   LevelManager({required String levelsPath})
   {
@@ -98,7 +98,7 @@ class LevelManager
 
     final data = await json.decode(response);
 
-    _levels = List<Level>.from(data.map((level) => Level(
+    levels = List<Level>.from(data.map((level) => Level(
       height:level['hauteur'],
       width:level['largeur'],
       levelGrid: List<String>.from(level['lignes'])
@@ -109,9 +109,9 @@ class LevelManager
   {
     setLevel(levelNumber);
 
-    if (!_levels[currentLevel].initialized)
+    if (!levels![currentLevel].initialized)
     {
-        _levels[currentLevel].initializeGrid();
+        levels![currentLevel].initializeGrid();
     }
   }
 }
