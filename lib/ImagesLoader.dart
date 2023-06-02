@@ -24,7 +24,7 @@ class Ressources {
     crate = await _loadImage('assets/sprites/caisse.png');
     hole = await _loadImage('assets/sprites/trou.png');
     wall = await _loadImage('assets/sprites/bloc.png');
-    ground = await _loadImage('assets/sprites/trou.png');
+    ground = await _loadImage('assets/sprites/sol.png');
     objective = await _loadImage('assets/sprites/cible.png');
     prepared = true;
   }
@@ -60,9 +60,9 @@ class MyPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     //Si les ressources ne sont pas prêtes, ou qu'il y a un problème, on sort de la fonction
-    if ((levelManager.levels == null) || (!ressources.prepared) ||(ressources.player==null)||(ressources.crate==null)) return;
+    if ((levelManager.isLevelParsed == null) || (!ressources.prepared) ||(ressources.player==null)||(ressources.crate==null)) return;
 
-    late final currentLevel = levelManager.levels![levelManager.currentLevel];
+    late final currentLevel = levelManager.getLevel(8);
 
     Rect srcRect = const Rect.fromLTWH(0, 0, 128, 128);
     late ui.Image? img;
@@ -78,8 +78,7 @@ class MyPainter extends CustomPainter {
         switch(currentLevel.blocsGrid[i][j].bloc)
         {
           case BlocType.EMPTY:
-            img = ressources.hole;
-            break;
+            continue;
           case BlocType.BOX:
             img = ressources.crate;
             break;
