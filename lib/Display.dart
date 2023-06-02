@@ -3,10 +3,10 @@ import 'ImagesLoader.dart';
 import 'Levels.dart';
 class Display extends StatefulWidget
 {
-
-  Display();
+  final LevelManager levelManager;
+  Display({required this.levelManager});
   @override
-  State<StatefulWidget> createState() => _Display();
+  State<StatefulWidget> createState() => _Display(levelManager: levelManager);
 }
 
 class _Display extends State<Display>
@@ -15,7 +15,7 @@ class _Display extends State<Display>
   late Widget toDisplay;
   Ressources ressources = Ressources(); //Sert au chargement des images en mémoire
 
-  _Display()
+  _Display({required this.levelManager})
   {
     ressources.prepare().then((value) => setState((){})); //Une fois les images chargées, on actualise
   }
@@ -45,7 +45,6 @@ class _Display extends State<Display>
   void initState()
   {
     super.initState();
-    levelManager = LevelManager(levelsPath: 'assets/levels.json');
     toDisplay = Menu(newGameCallBack, continueCallBack, selectLevelCallBack);
   }
 

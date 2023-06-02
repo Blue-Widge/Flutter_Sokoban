@@ -9,6 +9,7 @@ class Level
   List<String> levelGrid;
   bool initialized = false;
   late List<List<Entity>> blocsGrid;
+  PlayerEntity? player;
 
   Level({required this.height, required this.width, required this.levelGrid}) {initializeGrid();}
 
@@ -90,7 +91,7 @@ class Level
                   (levelGrid[row][column] == BlocType.BOX) ?
                   MovableEntity(posX: row, posY: column, bloc: BlocType.BOX, currentLevel: this) :
                   (levelGrid[row][column] == BlocType.SPAWNPOINT) ?
-                  PlayerEntity(posX: row, posY: column, bloc: BlocType.SPAWNPOINT, currentLevel: this) :
+                  player = PlayerEntity(posX: row, posY: column, bloc: BlocType.SPAWNPOINT, currentLevel: this) :
                   Entity(posX: row,
                       posY: column,
                       bloc: levelGrid[row][column],
@@ -189,4 +190,5 @@ class DirectionType
   static const int RIGHT = 1;
   static const int DOWN = 2;
   static const int LEFT = 3;
+  static int IDLE = 4;
 }
