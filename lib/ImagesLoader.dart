@@ -62,7 +62,7 @@ class MyPainter extends CustomPainter {
     //Si les ressources ne sont pas prêtes, ou qu'il y a un problème, on sort de la fonction
     if ((levelManager.isLevelParsed == null) || (!ressources.prepared) ||(ressources.player==null)||(ressources.crate==null)) return;
 
-    late final currentLevel = levelManager.getLevel(levelManager.currentLevel);
+    late final currentLevel = levelManager.getLevel(8);
 
     Rect srcRect = const Rect.fromLTWH(0, 0, 128, 128);
     late ui.Image? img;

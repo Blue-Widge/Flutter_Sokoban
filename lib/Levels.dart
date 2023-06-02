@@ -12,52 +12,110 @@ class Level
 
   Level({required this.height, required this.width, required this.levelGrid}) {initializeGrid();}
 
-  void initializeGrid()
+  void checkInsideOrOutside()
   {
-    try
+    for(int i = 0; i < height; ++i)
     {
-      if (!initialized)
+      int lineLength = levelGrid[i].length;
+      for (int j = 0; j < lineLength; ++j)
       {
-        for(int i = 0; i < height; ++i)
+        if (levelGrid[i][j] != BlocType.EMPTY)
+          continue;
+        bool foundWall = false;
+
+        //check up
+        for(int k = i; k >= 0; --k)
         {
-          bool inside = false;
-          bool wallPrevious = false;
-          for(int j = 0; j < levelGrid[i].length; ++j)
+          if (levelGrid[k].length > j && levelGrid[k][j] == BlocType.WALL)
           {
-            if (!(levelGrid[i][j] == BlocType.WALL))
-            {
-              inside = inside ^ wallPrevious;
-              if (inside)
-              {
-                String char = levelGrid[i][j] == BlocType.EMPTY ? BlocType.GROUND : levelGrid[i][j];
-                levelGrid[i] = levelGrid[i].substring(0, j) + char + levelGrid[i].substring(j + 1);
-              }
-            }
-            wallPrevious = levelGrid[i][j] == BlocType.WALL;
+            foundWall = true;
+            break;
           }
         }
-      }
+        if (!foundWall)
+          continue;
+        foundWall = false;
 
-      blocsGrid = List<List<Entity>>.generate(height,
-              (row) => List<Entity>.generate(levelGrid[row].length,
-                  (column) => (levelGrid[row][column] == BlocType.BOX) ?
-                    MovableEntity(posX: row, posY: column, bloc: BlocType.BOX, currentLevel: this) :
-                    (levelGrid[row][column] == BlocType.SPAWNPOINT) ?
-                      PlayerEntity(posX: row, posY: column, bloc: BlocType.SPAWNPOINT, currentLevel: this) :
-                      Entity(posX : row, posY: column, bloc: levelGrid[row][column], currentLevel: this, oversteppable: (levelGrid[row][column] == BlocType.GROUND))
-          )
-      );
-      initialized = true;
+        //check right
+        for(int k = j; k < lineLength; ++k)
+        {
+          if (levelGrid[i][k] == BlocType.WALL)
+          {
+            foundWall = true;
+            break;
+          }
+        }
+        if (!foundWall)
+          continue;
+        foundWall = false;
+        //check down
+        for(int k = i; k < height; ++k)
+        {
+          if (levelGrid[k].length > j && levelGrid[k][j] == BlocType.WALL)
+          {
+            foundWall = true;
+            break;
+          }
+        }
+        if (!foundWall)
+          continue;
+        foundWall = false;
+        //check left
+        for(int k = j; k >= 0; --k)
+        {
+          if (levelGrid[i][k] == BlocType.WALL)
+          {
+            foundWall = true;
+            break;
+          }
+        }
+        if (!foundWall)
+          continue;
+        levelGrid[i] = levelGrid[i].replaceRange(j, j+1, BlocType.GROUND);
+      }
     }
-    catch(e)
+  }
+
+  void initializeGrid()
+  {
+    try {
+      if (!initialized)
+        {
+          checkInsideOrOutside();
+
+          blocsGrid = List<List<Entity>>.generate(height,
+                  (row) =>
+              List<Entity>.generate(levelGrid[row].length,
+                      (column) =>
+                  (levelGrid[row][column] == BlocType.BOX) ?
+                  MovableEntity(posX: row, posY: column, bloc: BlocType.BOX, currentLevel: this) :
+                  (levelGrid[row][column] == BlocType.SPAWNPOINT) ?
+                  PlayerEntity(posX: row, posY: column, bloc: BlocType.SPAWNPOINT, currentLevel: this) :
+                  Entity(posX: row,
+                      posY: column,
+                      bloc: levelGrid[row][column],
+                      currentLevel: this,
+                      oversteppable: (levelGrid[row][column] == BlocType.GROUND))
+              )
+          );
+          initialized = true;
+        }
+    }
+    catch(e, stackTrace)
     {
-      print("Couldn't load level, try checking the json - ERROR : $e");
+      print("Couldn't load level, try checking the json - ERROR : $e at Line - $stackTrace");
     }
   }
 
   void resetLevel()
   {
-    initializeGrid();
+    for(int i = 0; i < height; ++i)
+      {
+        for(int j = 0; j < blocsGrid[i].length; ++j)
+          {
+            blocsGrid[i][j].bloc = levelGrid[i][j];
+          }
+      }
   }
 
 }
@@ -82,7 +140,7 @@ class LevelManager
     }
   }
 
-  void isLevelParsed() => _levels == null;
+  void isLevelParsed() => _levels != null;
 
   void setLevel(int levelNumber) => currentLevel = levelNumber;
 
