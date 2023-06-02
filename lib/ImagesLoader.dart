@@ -93,10 +93,9 @@ class MyPainter extends CustomPainter {
             img = ressources.objective;
             break;
         }
-        //img = ressources.crate;
         canvas.drawImageRect(img!, srcRect, destRect, Paint());
-
       }
+      canvas.drawImageRect(ressources.player!, srcRect, Rect.fromLTWH(6*50, 0, 50, 50), Paint());
     }
     //On dessine 2 sprites  aux coins de l'écran
     //Rect srcRect = Rect.fromLTWH(0, 0, 128, 128); //On prend tout le sprites (128x128 pixels)

@@ -22,11 +22,19 @@ class _Display extends State<Display>
 
   void newGameCallBack()
   {
-    setState(() {
+    setState(()
+    {
       levelManager.chargeLevel(0);
-      toDisplay = CustomPaint(
-          painter:MyPainter(MediaQuery.of(context).size.height-56-24, MediaQuery.of(context).size.width, ressources, levelManager)
+      Level currentLevel = levelManager.levels![levelManager.currentLevel];
+      toDisplay = InteractiveViewer(
+          boundaryMargin: const EdgeInsets.all(3000),
+          minScale: 0.25,
+          maxScale: 2.5,
+          child: CustomPaint(
+              painter:MyPainter(MediaQuery.of(context).size.height-56-24, MediaQuery.of(context).size.width, ressources, levelManager)
+          )
       );
+
     });
   }
   void continueCallBack()
