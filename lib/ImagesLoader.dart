@@ -62,7 +62,7 @@ class MyPainter extends CustomPainter {
     //Si les ressources ne sont pas prêtes, ou qu'il y a un problème, on sort de la fonction
     if ((levelManager.isLevelParsed == null) || (!ressources.prepared) ||(ressources.player==null)||(ressources.crate==null)) return;
 
-    late final currentLevel = levelManager.getLevel(8);
+    late final currentLevel = levelManager.getLevel(levelManager.currentLevel);
 
     Rect srcRect = const Rect.fromLTWH(0, 0, 128, 128);
     late ui.Image? img;
@@ -91,10 +91,12 @@ class MyPainter extends CustomPainter {
           case BlocType.OBJECTIVE:
             img = ressources.objective;
             break;
+          case BlocType.PLAYER:
+            img = ressources.player!;
+            canvas.drawImageRect(ressources.ground!, srcRect, destRect, Paint());
         }
         canvas.drawImageRect(img!, srcRect, destRect, Paint());
       }
-      canvas.drawImageRect(ressources.player!, srcRect, Rect.fromLTWH(6*50, 0, 50, 50), Paint());
     }
     //On dessine 2 sprites  aux coins de l'écran
     //Rect srcRect = Rect.fromLTWH(0, 0, 128, 128); //On prend tout le sprites (128x128 pixels)

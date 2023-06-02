@@ -32,12 +32,17 @@ dependencies:
     sdk: flutter
   http: any
   flutter_joystick: ^0.0.3
+  hive:
+  hive_flutter:
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
+  hive_generator:
+  build_runner:
   flutter_test:
     sdk: flutter
 

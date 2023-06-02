@@ -11,7 +11,6 @@ class Level
   late List<List<Entity>> blocsGrid;
 
   Level({required this.height, required this.width, required this.levelGrid}) {initializeGrid();}
-
   void checkInsideOrOutside()
   {
     for(int i = 0; i < height; ++i)
@@ -89,8 +88,8 @@ class Level
                       (column) =>
                   (levelGrid[row][column] == BlocType.BOX) ?
                   MovableEntity(posX: row, posY: column, bloc: BlocType.BOX, currentLevel: this) :
-                  (levelGrid[row][column] == BlocType.SPAWNPOINT) ?
-                  PlayerEntity(posX: row, posY: column, bloc: BlocType.SPAWNPOINT, currentLevel: this) :
+                  (levelGrid[row][column] == BlocType.PLAYER) ?
+                  PlayerEntity(posX: row, posY: column, bloc: BlocType.PLAYER, currentLevel: this) :
                   Entity(posX: row,
                       posY: column,
                       bloc: levelGrid[row][column],
@@ -180,7 +179,7 @@ class BlocType
   static const String WALL = '#';
   static const String BOX = '\$';
   static const String OBJECTIVE = '.';
-  static const String SPAWNPOINT = '@';
+  static const String PLAYER = '@';
 }
 
 class DirectionType
