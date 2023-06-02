@@ -9,6 +9,7 @@ class Level
   List<String> levelGrid;
   bool initialized = false;
   late List<List<Entity>> blocsGrid;
+  PlayerEntity? player;
 
   Level({required this.height, required this.width, required this.levelGrid}) {initializeGrid();}
   void checkInsideOrOutside()
@@ -188,4 +189,5 @@ class DirectionType
   static const int RIGHT = 1;
   static const int DOWN = 2;
   static const int LEFT = 3;
+  static int IDLE = 4;
 }

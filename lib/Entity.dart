@@ -27,15 +27,15 @@ class MovableEntity extends Entity
     {
       obstacle = currentLevel.blocsGrid[posX][posY + 1];
     }
-    if (direction == DirectionType.RIGHT)
+    else if (direction == DirectionType.RIGHT)
     {
       obstacle = currentLevel.blocsGrid[posX + 1][posY];
     }
-    if (direction == DirectionType.DOWN)
+    else if (direction == DirectionType.DOWN)
     {
       obstacle = currentLevel.blocsGrid[posX][posY - 1];
     }
-    if (direction == DirectionType.LEFT)
+    else if (direction == DirectionType.LEFT)
     {
       obstacle = currentLevel.blocsGrid[posX - 1][posY];
     }
@@ -53,17 +53,17 @@ class MovableEntity extends Entity
       gotOnObjective = currentLevel.blocsGrid[posX][posY + 1].bloc == BlocType.OBJECTIVE;
       currentLevel.blocsGrid[posX][posY + 1] = this;
     }
-    if (direction == DirectionType.RIGHT)
+    else if (direction == DirectionType.RIGHT)
     {
       gotOnObjective = currentLevel.blocsGrid[posX + 1][posY].bloc == BlocType.OBJECTIVE;
       currentLevel.blocsGrid[posX + 1][posY] = this;
     }
-    if (direction == DirectionType.DOWN)
+    else if (direction == DirectionType.DOWN)
     {
       gotOnObjective = currentLevel.blocsGrid[posX][posY - 1].bloc == BlocType.OBJECTIVE;
       currentLevel.blocsGrid[posX][posY - 1] = this;
     }
-    if (direction == DirectionType.LEFT)
+    else if (direction == DirectionType.LEFT)
     {
       gotOnObjective = currentLevel.blocsGrid[posX - 1][posY].bloc == BlocType.OBJECTIVE;
       currentLevel.blocsGrid[posX - 1][posY] = this;
