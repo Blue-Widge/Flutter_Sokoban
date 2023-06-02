@@ -12,13 +12,6 @@ class Level
 
   Level({required this.height, required this.width, required this.levelGrid}) {initializeGrid();}
 
-
-  void TEMP_SHOWLEVEL()
-  {
-    for(int i = 0; i < height; ++i)
-      print(levelGrid[i]);
-  }
-
   void initializeGrid()
   {
     try
@@ -71,7 +64,7 @@ class Level
 
 class LevelManager
 {
-  List<Level>? levels;
+  late List<Level>? _levels;
   int currentLevel = 1;
 
   LevelManager({required String levelsPath})
@@ -81,7 +74,6 @@ class LevelManager
       _parseLevels(levelsPath).then((_)
       {
         print("Successfully opened the json file");
-        _levels[0].TEMP_SHOWLEVEL();
       });
     }
     catch(e)
@@ -89,6 +81,8 @@ class LevelManager
       throw Exception("Couldn't open $levelsPath check if the file exists or is in the pubspec.yaml");
     }
   }
+
+  void isLevelParsed() => _levels == null;
 
   void setLevel(int levelNumber) => currentLevel = levelNumber;
 
@@ -98,7 +92,7 @@ class LevelManager
 
     final data = await json.decode(response);
 
-    levels = List<Level>.from(data.map((level) => Level(
+    _levels = List<Level>.from(data.map((level) => Level(
       height:level['hauteur'],
       width:level['largeur'],
       levelGrid: List<String>.from(level['lignes'])
@@ -109,10 +103,15 @@ class LevelManager
   {
     setLevel(levelNumber);
 
-    if (!levels![currentLevel].initialized)
+    if (!_levels![currentLevel].initialized)
     {
-        levels![currentLevel].initializeGrid();
+        _levels![currentLevel].initializeGrid();
     }
+  }
+
+  Level getLevel(int levelNumber)
+  {
+    return _levels![levelNumber];
   }
 }
 
