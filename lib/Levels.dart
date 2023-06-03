@@ -11,7 +11,8 @@ class Level
   late List<List<Entity>> blocsGrid;
   PlayerEntity? player;
 
-  Level({required this.height, required this.width, required this.levelGrid});
+  Level({required this.height, required this.width, required this.levelGrid}) {initializeGrid();}
+
   void checkInsideOrOutside()
   {
     for(int i = 0; i < height; ++i)

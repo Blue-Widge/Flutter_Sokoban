@@ -87,5 +87,13 @@ class MovableEntity extends Entity
 
 class PlayerEntity extends MovableEntity
 {
+  int lastMove = DirectionType.DOWN;
+
   PlayerEntity({required super.row, required super.column, required super.bloc, required super.currentLevel});
+
+  @override bool moveEntity(int direction)
+  {
+    lastMove = direction;
+    return super.moveEntity(direction);
+  }
 }
