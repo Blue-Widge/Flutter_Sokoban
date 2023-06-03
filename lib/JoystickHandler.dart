@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_joystick/flutter_joystick.dart';
 import 'package:sokoban/Levels.dart';
 import 'package:arrow_pad/arrow_pad.dart';
 

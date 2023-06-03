@@ -1,6 +1,5 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
+import 'package:sokoban/Entity.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'dart:async';
@@ -10,7 +9,7 @@ import 'Levels.dart';
 //La classe contenant les images chargées en mémoire
 class Ressources {
   //Les images nécessaires au jeu, doivent se trouver dans les assets
-  ui.Image? player; //un des sprites du joueur
+  List<ui.Image?>? playerSprites; //un des sprites du joueur
   ui.Image? crate; //le sprite d'une caisse
   ui.Image? hole; //le sprite d'un trou
   ui.Image? wall;
@@ -19,8 +18,30 @@ class Ressources {
   bool prepared = false;
 
   //Lance le chargement asynchrone des images
-  Future<void> prepare() async {
-    player = await _loadImage('assets/sprites/droite_0.png');
+  Future<void> prepare() async
+  {
+    playerSprites = await Future.wait(List<Future<ui.Image>>.generate(DirectionType.IDLE * 3, (direction)
+      {
+        String? frDirection;
+
+        switch(direction % 4)
+        {
+          case DirectionType.UP:
+            frDirection = "haut";
+            break;
+          case DirectionType.RIGHT:
+            frDirection = "droite";
+            break;
+          case DirectionType.DOWN:
+            frDirection = "bas";
+            break;
+          case DirectionType.LEFT:
+            frDirection = "gauche";
+            break;
+        }
+        return _loadImage('assets/sprites/${frDirection}_${direction % 3}.png');
+      })
+    );
     crate = await _loadImage('assets/sprites/caisse.png');
     hole = await _loadImage('assets/sprites/trou.png');
     wall = await _loadImage('assets/sprites/bloc.png');
@@ -54,15 +75,14 @@ class MyPainter extends CustomPainter {
   double width;
   Ressources ressources;
   LevelManager levelManager;
-
   MyPainter(this.height, this.width, this.ressources, this.levelManager);
 
   @override
   void paint(Canvas canvas, Size size) {
     //Si les ressources ne sont pas prêtes, ou qu'il y a un problème, on sort de la fonction
-    if ((levelManager.isLevelParsed == null) || (!ressources.prepared) ||(ressources.player==null)||(ressources.crate==null)) return;
+    if ((levelManager.isLevelParsed() == false) || (!ressources.prepared) ||(ressources.playerSprites==null)||(ressources.crate==null)) return;
 
-    late final currentLevel = levelManager.getLevel(levelManager.currentLevel);
+    Level currentLevel = levelManager.getCurrentLevel();
 
 
     Rect srcRect = const Rect.fromLTWH(0, 0, 128, 128);
@@ -93,8 +113,17 @@ class MyPainter extends CustomPainter {
             img = ressources.objective;
             break;
           case BlocType.PLAYER:
-            img = ressources.player!;
-            canvas.drawImageRect(ressources.ground!, srcRect, destRect, Paint());
+            img = ressources.playerSprites![levelManager.getCurrentLevel().player!.lastMove]!;
+            switch((currentLevel.blocsGrid[i][j] as MovableEntity).onBloc)
+            {
+              case BlocType.OBJECTIVE:
+                canvas.drawImageRect(ressources.objective!, srcRect, destRect, Paint());
+                break;
+              case BlocType.GROUND:
+                default:
+                canvas.drawImageRect(ressources.ground!, srcRect, destRect, Paint());
+                break;
+            }
         }
         canvas.drawImageRect(img!, srcRect, destRect, Paint());
       }

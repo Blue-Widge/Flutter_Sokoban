@@ -111,7 +111,7 @@ class Level
     }
   }
 
-  void resetLevel()
+  void resetLevel() async
   {
     for(int i = 0; i < height; ++i)
       {
@@ -122,12 +122,27 @@ class Level
       }
   }
 
+  bool levelComplete()
+  {
+    for(int i = 0; i < height; ++i)
+      {
+        for(int j = 0; j < levelGrid[i].length; ++j)
+          {
+            if (levelGrid[i][j] == BlocType.OBJECTIVE && blocsGrid[i][j].bloc != BlocType.BOX)
+            {
+              return false;
+            }
+          }
+      }
+    return true;
+  }
 }
 
 class LevelManager
 {
   List<Level>? _levels;
-  int currentLevel = 1;
+  int currentLevel = 0;
+  int maxLevel = 0;
 
   LevelManager({required String levelsPath})
   {
@@ -144,7 +159,10 @@ class LevelManager
     }
   }
 
-  void isLevelParsed() => _levels != null;
+  //#TODO launch credits for finishing the game or smth
+  get gameEnding => null;
+
+  bool isLevelParsed() => _levels != null;
   int getNumberOfLevels() => _levels!.length;
   void setLevel(int levelNumber) => currentLevel = levelNumber;
 
@@ -154,11 +172,14 @@ class LevelManager
 
     final data = await json.decode(response);
 
-    _levels = List<Level>.from(data.map((level) => Level(
-      height:level['hauteur'],
-      width:level['largeur'],
-      levelGrid: List<String>.from(level['lignes'])
-    )));
+    _levels = List<Level>.from(data.map((level) =>
+      Level(
+          height: level['hauteur'],
+          width: level['largeur'],
+          levelGrid: List<String>.from(level['lignes'])
+      )
+    ));
+    maxLevel = _levels!.length;
   }
 
   void chargeLevel(int levelNumber, bool addToDb)
@@ -180,10 +201,27 @@ class LevelManager
     }
   }
 
-  Level getLevel(int levelNumber)
+  void _checkLevelState()
   {
-    return _levels![levelNumber];
+    if (_levels![currentLevel].levelComplete())
+    {
+      // #TODO launch congrats for finishing the level
+      currentLevel == maxLevel ? gameEnding : chargeLevel(currentLevel + 1);
+    }
   }
+
+  Level getCurrentLevel()
+  {
+    _checkLevelState();
+    return _levels![currentLevel];
+  }
+
+  void resetLevels()
+  {
+    for(int i = 0; i <= maxLevel; ++i)
+      _levels![i].resetLevel();
+  }
+
 }
 
 class BlocType

@@ -31,7 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
   http: any
-  flutter_joystick: ^0.0.3
   hive:
   hive_flutter:
   arrow_pad: ^0.2.0
