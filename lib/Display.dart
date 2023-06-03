@@ -32,7 +32,7 @@ class _Display extends State<Display>
   void continueCallBack()
   {
     if (levelManager.currentLevel != 0 || TempGameData.moved)
-      levelManager.chargeLevel(levelManager.currentLevel);
+      levelManager.chargeLevel(levelManager.currentLevel, false);
     setState(()
     {
       displayLevel(levelManager.currentLevel);
@@ -111,7 +111,7 @@ class _Display extends State<Display>
   void joystickCallBack(int direction)
   {
     setState(() {
-      levelManager.getLevel(levelManager.currentLevel).player!.moveEntity(direction, levelManager.currentLevel);
+      levelManager.getCurrentLevel().player!.moveEntity(direction, levelManager.currentLevel);
     });
   }
 

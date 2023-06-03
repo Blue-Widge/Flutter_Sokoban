@@ -206,7 +206,7 @@ class LevelManager
     if (_levels![currentLevel].levelComplete())
     {
       // #TODO launch congrats for finishing the level
-      currentLevel == maxLevel ? gameEnding : chargeLevel(currentLevel + 1);
+      currentLevel == maxLevel ? gameEnding : chargeLevel(currentLevel + 1, true);
     }
   }
 

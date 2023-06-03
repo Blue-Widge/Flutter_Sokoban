@@ -105,9 +105,9 @@ class PlayerEntity extends MovableEntity
 
   PlayerEntity({required super.row, required super.column, required super.bloc, required super.currentLevel});
 
-  @override bool moveEntity(int direction)
+  @override bool moveEntity(int direction, int curentLevelNum)
   {
     lastMove = direction;
-    return super.moveEntity(direction);
+    return super.moveEntity(direction, curentLevelNum);
   }
 }
