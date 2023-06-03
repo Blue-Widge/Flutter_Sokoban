@@ -1,4 +1,10 @@
+import 'dart:developer';
+
+import 'package:flutter/cupertino.dart';
+
 import 'Levels.dart';
+import 'BoxDb.dart';
+import 'LevelsDb.dart';
 
 class Entity
 {
@@ -10,9 +16,10 @@ class Entity
 
   Entity({required this.row, required this.column, required this.bloc, required this.currentLevel, this.oversteppable = false});
 
-  bool moveable(int direction) => false;
 
-  bool moveEntity(int direction) => false;
+  bool moveable(int direction, int currentLevelNum) => false;
+
+  bool moveEntity(int direction, int curentLevelNum) => false;
 }
 
 class MovableEntity extends Entity
@@ -21,7 +28,7 @@ class MovableEntity extends Entity
 
   MovableEntity({required super.row, required super.column, required super.bloc, required super.currentLevel, super.oversteppable});
 
-  @override bool moveable(int direction)
+  @override bool moveable(int direction, int currentLevelNum)
   {
     Entity? obstacle;
 
@@ -43,12 +50,12 @@ class MovableEntity extends Entity
     }
     else
       return false;
-    return obstacle.oversteppable || obstacle.moveEntity(direction);
+    return obstacle.oversteppable || obstacle.moveEntity(direction, currentLevelNum);
   }
 
-  @override bool moveEntity(int direction)
+  @override bool moveEntity(int direction, int curentLevelNum)
   {
-    if (!moveable(direction))
+    if (!moveable(direction, curentLevelNum))
       return false;
 
     late bool gotOnObjective;
@@ -81,6 +88,13 @@ class MovableEntity extends Entity
       currentLevel.blocsGrid[row + 1][column] = Entity(row: row + 1, column: column, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel, oversteppable: true);
     }
     onObjective = gotOnObjective;
+    String nbInDb = boxDb.length.toString();
+    if(boxDb.length > 100)
+      boxDb.delete('key_level_$curentLevelNum+_0');
+    String key = 'key_level_$curentLevelNum+_$nbInDb';
+    List<List<String>> blocGridStr = List<List<String>>.generate(currentLevel.blocsGrid.length, (i) => List<String>.generate(currentLevel.blocsGrid[i].length, (j) => currentLevel.blocsGrid[i][j].bloc));
+    boxDb.put(key, LevelsDb(currentLevel: curentLevelNum, previousBlocsGrids: blocGridStr));
+
     return true;
   }
 }

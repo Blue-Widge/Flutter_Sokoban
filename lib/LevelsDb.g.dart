@@ -19,9 +19,7 @@ class LevelsDbAdapter extends TypeAdapter<LevelsDb> {
     return LevelsDb(
       currentLevel: fields[0] as int,
       previousBlocsGrids: (fields[1] as List)
-          .map((dynamic e) => (e as List)
-              .map((dynamic e) => (e as List).cast<Entity>())
-              .toList())
+          .map((dynamic e) => (e as List).cast<String>())
           .toList(),
     );
   }

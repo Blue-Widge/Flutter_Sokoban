@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sokoban/Entity.dart';
 import 'Display.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:sokoban/LevelsDb.dart';
+import 'LevelsDb.dart';
+import 'Entity.dart';
 
 import 'Levels.dart';
 import 'BoxDb.dart';

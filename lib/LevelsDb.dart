@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'Entity.dart';
 
 part 'LevelsDb.g.dart';
 
@@ -13,5 +12,5 @@ class LevelsDb {
   int currentLevel;
 
   @HiveField(1)
-  List<List<List<Entity>>> previousBlocsGrids;
+  List<List<String>> previousBlocsGrids;
 }

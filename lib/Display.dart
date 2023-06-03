@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'BoxDb.dart';
 import 'ImagesLoader.dart';
 import 'Levels.dart';
 import 'JoystickHandler.dart';
@@ -24,8 +25,8 @@ class _Display extends State<Display>
 
   void newGameCallBack()
   {
-    //TODO: clear dataBase
-    levelManager.setLevel(0);
+    boxDb.clear;
+    levelManager.chargeLevel(levelManager.currentLevel, true);
     displayLevel(levelManager.currentLevel);
   }
   void continueCallBack()
@@ -40,6 +41,7 @@ class _Display extends State<Display>
     List<Widget> buttons = List.generate(nbLevels, (index) =>
         FloatingActionButton.extended(
           onPressed: () {
+            levelManager.chargeLevel(levelManager.currentLevel, true);
             displayLevel(index);
           },
           extendedPadding: EdgeInsets.all(30),
@@ -66,7 +68,6 @@ class _Display extends State<Display>
   }
 
   void displayLevel(int levelNumber){
-    levelManager.setLevel(levelNumber);
     setState(() {
       toDisplay = Container(
           color: Colors.black26,
@@ -94,7 +95,7 @@ class _Display extends State<Display>
   void joystickCallBack(int direction)
   {
     setState(() {
-      levelManager.getLevel(levelManager.currentLevel).player?.moveEntity(direction);
+      levelManager.getLevel(levelManager.currentLevel).player!.moveEntity(direction, levelManager.currentLevel);
     });
   }
 

@@ -64,6 +64,7 @@ class MyPainter extends CustomPainter {
 
     late final currentLevel = levelManager.getLevel(levelManager.currentLevel);
 
+
     Rect srcRect = const Rect.fromLTWH(0, 0, 128, 128);
     late ui.Image? img;
 

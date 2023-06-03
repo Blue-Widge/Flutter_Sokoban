@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'LevelsDb.dart';
+import 'BoxDb.dart';
 import 'Entity.dart';
 
 class Level
@@ -12,6 +14,7 @@ class Level
   PlayerEntity? player;
 
   Level({required this.height, required this.width, required this.levelGrid}) {initializeGrid();}
+
   void checkInsideOrOutside()
   {
     for(int i = 0; i < height; ++i)
@@ -158,9 +161,18 @@ class LevelManager
     )));
   }
 
-  void chargeLevel(int levelNumber)
+  void chargeLevel(int levelNumber, bool addToDb)
   {
     setLevel(levelNumber);
+    if(addToDb)
+    {
+      //Add to the DB new initialized grid
+      String nbInDb = boxDb.length.toString();
+      String key = 'key_level_$levelNumber+_$nbInDb';
+      List<List<String>> blocGridStr = List<List<String>>.generate(_levels![levelNumber].blocsGrid.length, (i) => List<String>.generate(_levels![levelNumber].blocsGrid[i].length, (j) => _levels![levelNumber].blocsGrid[i][j].bloc));
+      boxDb.put(key, LevelsDb(currentLevel: levelNumber, previousBlocsGrids: blocGridStr));
+    }
+
 
     if (!_levels![currentLevel].initialized)
     {
