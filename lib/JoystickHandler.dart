@@ -9,7 +9,8 @@ class JoystickHandler extends StatelessWidget
   JoystickHandler({required this.movePlayerCallback});
   int direction = DirectionType.IDLE;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
    return ArrowPad(
       height: (MediaQuery.of(context).size.height-56-24) / 5,
       width: MediaQuery.of(context).size.width / 5,

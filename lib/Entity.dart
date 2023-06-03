@@ -2,13 +2,15 @@ import 'Levels.dart';
 
 class Entity
 {
-  int posX;
-  int posY;
+  int row;
+  int column;
   String bloc;
   Level currentLevel;
   bool oversteppable;
 
-  Entity({required this.posX, required this.posY, required this.bloc, required this.currentLevel, this.oversteppable = false});
+  Entity({required this.row, required this.column, required this.bloc, required this.currentLevel, this.oversteppable = false});
+
+  bool moveable(int direction) => false;
 
   bool moveEntity(int direction) => false;
 }
@@ -17,72 +19,79 @@ class MovableEntity extends Entity
 {
   bool onObjective = false;
 
-  MovableEntity({required super.posX, required super.posY, required super.bloc, required super.currentLevel, super.oversteppable});
+  MovableEntity({required super.row, required super.column, required super.bloc, required super.currentLevel, super.oversteppable});
 
-  bool moveable(int direction)
+  @override bool moveable(int direction)
   {
-    late Entity obstacle;
+    Entity? obstacle;
 
     if (direction == DirectionType.RIGHT)
     {
-      obstacle = currentLevel.blocsGrid[posX][posY + 1];
+      obstacle = currentLevel.blocsGrid[row][column + 1];
     }
     else if (direction == DirectionType.DOWN)
     {
-      obstacle = currentLevel.blocsGrid[posX + 1][posY];
+      obstacle = currentLevel.blocsGrid[row + 1][column];
     }
     else if (direction == DirectionType.LEFT)
     {
-      obstacle = currentLevel.blocsGrid[posX][posY - 1];
+      obstacle = currentLevel.blocsGrid[row][column - 1];
     }
     else if (direction == DirectionType.UP)
     {
-      obstacle = currentLevel.blocsGrid[posX - 1][posY];
+      obstacle = currentLevel.blocsGrid[row - 1][column];
     }
-    return obstacle.moveEntity(direction) || obstacle.oversteppable;
+    else
+      return false;
+    return obstacle.oversteppable || obstacle.moveEntity(direction);
+  }
+
+  void printGriDoversteppable()
+  {
+    for(int i = 0; i < currentLevel.height; ++i)
+      {
+        for(int j = 0; j < currentLevel.blocsGrid[i].length; ++j)
+          {
+            print(oversteppable.toString());
+          }
+      }
   }
 
   @override bool moveEntity(int direction)
   {
+    printGriDoversteppable();
     if (!moveable(direction))
       return false;
 
-    late final previousBloc;
-
-    bool gotOnObjective = false;
+    late bool gotOnObjective;
     if (direction == DirectionType.RIGHT)
     {
-      gotOnObjective = currentLevel.blocsGrid[posX][posY + 1].bloc == BlocType.OBJECTIVE;
-      previousBloc = currentLevel.blocsGrid[posX][posY + 1];
-      this.posY += 1;
-      currentLevel.blocsGrid[posX][posY] = this;
-      currentLevel.blocsGrid[posX][posY - 1] = Entity(posX: posX, posY: posY - 1, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
+      gotOnObjective = currentLevel.blocsGrid[row][column + 1].bloc == BlocType.OBJECTIVE;
+      this.column += 1;
+      currentLevel.blocsGrid[row][column] = this;
+      currentLevel.blocsGrid[row][column - 1] = Entity(row: row, column: column - 1, bloc: gotOnObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel, oversteppable: true);
     }
     else if (direction == DirectionType.DOWN)
     {
-      gotOnObjective = currentLevel.blocsGrid[posX + 1][posY].bloc == BlocType.OBJECTIVE;
-      previousBloc = currentLevel.blocsGrid[posX + 1][posY];
-      this.posX += 1;
-      currentLevel.blocsGrid[posX][posY] = this;
-      currentLevel.blocsGrid[posX - 1][posY] = Entity(posX: posX - 1, posY: posY, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
+      gotOnObjective = currentLevel.blocsGrid[row + 1][column].bloc == BlocType.OBJECTIVE;
+      this.row += 1;
+      currentLevel.blocsGrid[row][column] = this;
+      currentLevel.blocsGrid[row - 1][column] = Entity(row: row - 1, column: column, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel, oversteppable: true);
     }
     else if (direction == DirectionType.LEFT)
     {
-      gotOnObjective = currentLevel.blocsGrid[posX][posY - 1].bloc == BlocType.OBJECTIVE;
-      previousBloc = currentLevel.blocsGrid[posX][posY - 1] ;
-      this.posY -= 1;
-      currentLevel.blocsGrid[posX][posY] = this;
-      currentLevel.blocsGrid[posX][posY + 1] = Entity(posX: posX, posY: posY + 1, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
+      gotOnObjective = currentLevel.blocsGrid[row][column - 1].bloc == BlocType.OBJECTIVE;
+      this.column -= 1;
+      currentLevel.blocsGrid[row][column] = this;
+      currentLevel.blocsGrid[row][column + 1] = Entity(row: row, column: column + 1, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel, oversteppable: true);
     }
     else if (direction == DirectionType.UP)
     {
-      gotOnObjective = currentLevel.blocsGrid[posX - 1][posY].bloc == BlocType.OBJECTIVE;
-      previousBloc = currentLevel.blocsGrid[posX - 1][posY] ;
-      this.posX -= 1;
-      currentLevel.blocsGrid[posX][posY] = this;
-      currentLevel.blocsGrid[posX + 1][posY] = Entity(posX: posX + 1, posY: posY, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
+      gotOnObjective = currentLevel.blocsGrid[row - 1][column].bloc == BlocType.OBJECTIVE;
+      this.row -= 1;
+      currentLevel.blocsGrid[row][column] = this;
+      currentLevel.blocsGrid[row + 1][column] = Entity(row: row + 1, column: column, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel, oversteppable: true);
     }
-    //currentLevel.blocsGrid[posX][posY] = Entity(posX: posX, posY: posY, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
     onObjective = gotOnObjective;
     return true;
   }
@@ -90,6 +99,5 @@ class MovableEntity extends Entity
 
 class PlayerEntity extends MovableEntity
 {
-  PlayerEntity({required super.posX, required super.posY, required super.bloc, required super.currentLevel});
-
+  PlayerEntity({required super.row, required super.column, required super.bloc, required super.currentLevel});
 }

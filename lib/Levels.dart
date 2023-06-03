@@ -88,14 +88,15 @@ class Level
               List<Entity>.generate(levelGrid[row].length,
                       (column) =>
                   (levelGrid[row][column] == BlocType.BOX) ?
-                  MovableEntity(posX: row, posY: column, bloc: BlocType.BOX, currentLevel: this) :
+                  MovableEntity(row: row, column: column, bloc: BlocType.BOX, currentLevel: this) :
                   (levelGrid[row][column] == BlocType.PLAYER) ?
-                  player = PlayerEntity(posX: row, posY: column, bloc: BlocType.PLAYER, currentLevel: this) :
-                  Entity(posX: row,
-                      posY: column,
+                  player = PlayerEntity(row: row, column: column, bloc: BlocType.PLAYER, currentLevel: this) :
+                  Entity(row: row,
+                      column: column,
                       bloc: levelGrid[row][column],
                       currentLevel: this,
-                      oversteppable: (levelGrid[row][column] == BlocType.GROUND))
+                      oversteppable: BlocType.OVERSTEPPABLE.contains(levelGrid[row][column])
+                  )
               )
           );
           initialized = true;
@@ -181,6 +182,7 @@ class BlocType
   static const String BOX = '\$';
   static const String OBJECTIVE = '.';
   static const String PLAYER = '@';
+  static final Set<String> OVERSTEPPABLE = {GROUND, OBJECTIVE};
 }
 
 class DirectionType
