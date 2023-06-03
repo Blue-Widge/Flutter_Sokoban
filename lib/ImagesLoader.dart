@@ -1,6 +1,5 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
+import 'package:sokoban/Entity.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'dart:async';
@@ -54,15 +53,14 @@ class MyPainter extends CustomPainter {
   double width;
   Ressources ressources;
   LevelManager levelManager;
-
   MyPainter(this.height, this.width, this.ressources, this.levelManager);
 
   @override
   void paint(Canvas canvas, Size size) {
     //Si les ressources ne sont pas prêtes, ou qu'il y a un problème, on sort de la fonction
-    if ((levelManager.isLevelParsed == null) || (!ressources.prepared) ||(ressources.player==null)||(ressources.crate==null)) return;
+    if ((levelManager.isLevelParsed() == false) || (!ressources.prepared) ||(ressources.player==null)||(ressources.crate==null)) return;
 
-    late final currentLevel = levelManager.getLevel(levelManager.currentLevel);
+    Level currentLevel = levelManager.getCurrentLevel();
 
     Rect srcRect = const Rect.fromLTWH(0, 0, 128, 128);
     late ui.Image? img;
@@ -93,7 +91,16 @@ class MyPainter extends CustomPainter {
             break;
           case BlocType.PLAYER:
             img = ressources.player!;
-            canvas.drawImageRect(ressources.ground!, srcRect, destRect, Paint());
+            switch((currentLevel.blocsGrid[i][j] as MovableEntity).onBloc)
+            {
+              case BlocType.OBJECTIVE:
+                canvas.drawImageRect(ressources.objective!, srcRect, destRect, Paint());
+                break;
+              case BlocType.GROUND:
+                default:
+                canvas.drawImageRect(ressources.ground!, srcRect, destRect, Paint());
+                break;
+            }
         }
         canvas.drawImageRect(img!, srcRect, destRect, Paint());
       }

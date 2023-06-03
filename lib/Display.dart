@@ -25,13 +25,16 @@ class _Display extends State<Display>
   void newGameCallBack()
   {
     //TODO: vide dataBase
-    levelManager.setLevel(0);
+    levelManager.chargeLevel(0);
     displayLevel(levelManager.currentLevel);
   }
   void continueCallBack()
   {
-    setState(() {
-      toDisplay = Container(child: Text("test"),);
+    if (levelManager.currentLevel != 0 || TempGameData.moved)
+      levelManager.chargeLevel(levelManager.currentLevel);
+    setState(()
+    {
+      displayLevel(levelManager.currentLevel);
     });
   }
   void selectLevelCallBack()
@@ -65,7 +68,8 @@ class _Display extends State<Display>
     });
   }
 
-  void displayLevel(int levelNumber){
+  void displayLevel(int levelNumber)
+  {
     levelManager.setLevel(levelNumber);
     setState(() {
       toDisplay = Container(
@@ -85,8 +89,21 @@ class _Display extends State<Display>
               Align(
                 alignment: Alignment.bottomRight,
                 child: JoystickHandler(movePlayerCallback: joystickCallBack),
-              )],
-          )
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: FloatingActionButton.extended(
+                  onPressed: () => setState(()
+                  {
+                    toDisplay = Menu(newGameCallBack, continueCallBack, selectLevelCallBack);
+                  }),
+                  backgroundColor: Colors.deepOrangeAccent,
+                  foregroundColor: Colors.white,
+                  label: const Text("Menu"),
+                ),
+              ),
+            ],
+          ),
       );
     });
   }
@@ -94,7 +111,7 @@ class _Display extends State<Display>
   void joystickCallBack(int direction)
   {
     setState(() {
-      levelManager.getLevel(levelManager.currentLevel).player?.moveEntity(direction);
+      levelManager.getCurrentLevel().player?.moveEntity(direction);
     });
   }
 
@@ -110,6 +127,12 @@ class _Display extends State<Display>
   {
       return toDisplay;
   }
+}
+
+class TempGameData
+{
+  static bool _hasMoved = false;
+  static get moved => _hasMoved;
 }
 
 class Menu extends StatelessWidget
