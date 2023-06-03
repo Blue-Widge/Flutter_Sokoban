@@ -27,6 +27,7 @@ class _Display extends State<Display>
   {
     //TODO: vide dataBase
     levelManager.chargeLevel(0);
+    levelManager.getCurrentLevel().resetLevel();
     displayLevel(levelManager.currentLevel);
   }
   void continueCallBack()
@@ -43,7 +44,10 @@ class _Display extends State<Display>
     int nbLevels = levelManager.getNumberOfLevels();
     List<Widget> buttons = List.generate(nbLevels, (index) =>
         FloatingActionButton.extended(
-          onPressed: () {
+          onPressed: ()
+          {
+            levelManager.setLevel(index);
+            levelManager.getCurrentLevel().resetLevel();
             displayLevel(index);
           },
           extendedPadding: EdgeInsets.all(30),
@@ -71,10 +75,9 @@ class _Display extends State<Display>
 
   void displayLevel(int levelNumber)
   {
-    levelManager.setLevel(levelNumber);
     setState(() {
       toDisplay = Container(
-          color: Colors.black26,
+          color: Colors.black87,
           child: Stack(
             alignment: Alignment.bottomLeft,
             fit: StackFit.passthrough,

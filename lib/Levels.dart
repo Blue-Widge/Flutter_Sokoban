@@ -87,20 +87,14 @@ class Level
           blocsGrid = List<List<Entity>>.generate(height,
                   (row) =>
               List<Entity>.generate(levelGrid[row].length,
-                      (column) =>
-                  (levelGrid[row][column] == BlocType.BOX) ?
-                  MovableEntity(row: row, column: column, bloc: BlocType.BOX, currentLevel: this) :
-                  (levelGrid[row][column] == BlocType.PLAYER) ?
-                  player = PlayerEntity(row: row, column: column, bloc: BlocType.PLAYER, currentLevel: this) :
-                  Entity(row: row,
-                      column: column,
-                      bloc: levelGrid[row][column],
-                      currentLevel: this,
-                      oversteppable: BlocType.OVERSTEPPABLE.contains(levelGrid[row][column])
-                  )
+                      (column) => chooseEntity(levelGrid, row, column)
               )
           );
           initialized = true;
+        }
+      else
+        {
+          resetLevel();
         }
     }
     catch(e, stackTrace)
@@ -109,13 +103,17 @@ class Level
     }
   }
 
-  void resetLevel() async
+  void resetLevel()
   {
-    for(int i = 0; i < height; ++i)
+    if (!initialized)
+      initializeGrid();
+    else
       {
-        for(int j = 0; j < blocsGrid[i].length; ++j)
+        for(int i = 0; i < height; ++i)
           {
-            blocsGrid[i][j].bloc = levelGrid[i][j];
+            int length = blocsGrid[i].length;
+            for(int j = 0; j < length; ++j)
+              blocsGrid[i][j] = chooseEntity(levelGrid, i, j);
           }
       }
   }
@@ -133,6 +131,21 @@ class Level
           }
       }
     return true;
+  }
+
+  Entity chooseEntity(List<String> levelGrid, row, column)
+  {
+    return
+    (levelGrid[row][column] == BlocType.BOX) ?
+    MovableEntity(row: row, column: column, bloc: BlocType.BOX, currentLevel: this) :
+    (levelGrid[row][column] == BlocType.PLAYER) ?
+    player = PlayerEntity(row: row, column: column, bloc: BlocType.PLAYER, currentLevel: this) :
+    Entity(row: row,
+        column: column,
+        bloc: levelGrid[row][column],
+        currentLevel: this,
+        oversteppable: BlocType.OVERSTEPPABLE.contains(levelGrid[row][column])
+    );
   }
 }
 
@@ -221,6 +234,7 @@ class BlocType
   static const String BOX = '\$';
   static const String OBJECTIVE = '.';
   static const String PLAYER = '@';
+  static const String HOLE = '*';
   static final Set<String> OVERSTEPPABLE = {GROUND, OBJECTIVE};
 }
 
