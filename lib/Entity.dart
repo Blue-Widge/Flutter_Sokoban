@@ -1,7 +1,4 @@
-import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
-
+import 'package:flutter/scheduler.dart' show Ticker, TickerCallback;
 import 'Levels.dart';
 import 'BoxDb.dart';
 import 'LevelsDb.dart';
@@ -101,13 +98,13 @@ class MovableEntity extends Entity
 
 class PlayerEntity extends MovableEntity
 {
-  int lastMove = DirectionType.DOWN;
+  int currentMove = DirectionType.DOWN;
 
   PlayerEntity({required super.row, required super.column, required super.bloc, required super.currentLevel});
 
   @override bool moveEntity(int direction, int curentLevelNum)
   {
-    lastMove = direction;
+    currentMove = direction;
     return super.moveEntity(direction, curentLevelNum);
   }
 }
