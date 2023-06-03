@@ -46,20 +46,8 @@ class MovableEntity extends Entity
     return obstacle.oversteppable || obstacle.moveEntity(direction);
   }
 
-  void printGriDoversteppable()
-  {
-    for(int i = 0; i < currentLevel.height; ++i)
-      {
-        for(int j = 0; j < currentLevel.blocsGrid[i].length; ++j)
-          {
-            print(oversteppable.toString());
-          }
-      }
-  }
-
   @override bool moveEntity(int direction)
   {
-    printGriDoversteppable();
     if (!moveable(direction))
       return false;
 
@@ -69,7 +57,7 @@ class MovableEntity extends Entity
       gotOnObjective = currentLevel.blocsGrid[row][column + 1].bloc == BlocType.OBJECTIVE;
       this.column += 1;
       currentLevel.blocsGrid[row][column] = this;
-      currentLevel.blocsGrid[row][column - 1] = Entity(row: row, column: column - 1, bloc: gotOnObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel, oversteppable: true);
+      currentLevel.blocsGrid[row][column - 1] = Entity(row: row, column: column - 1, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel, oversteppable: true);
     }
     else if (direction == DirectionType.DOWN)
     {
