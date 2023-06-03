@@ -95,12 +95,8 @@ class Level
                       column: column,
                       bloc: levelGrid[row][column],
                       currentLevel: this,
-<<<<<<< HEAD
-                      oversteppable: (levelGrid[row][column] == BlocType.GROUND || levelGrid[row][column] == BlocType.OBJECTIVE))
-=======
                       oversteppable: BlocType.OVERSTEPPABLE.contains(levelGrid[row][column])
                   )
->>>>>>> 390d798e54460a10ab33852e52e525b890540a96
               )
           );
           initialized = true;
