@@ -16,6 +16,7 @@ class _Display extends State<Display>
   late LevelManager levelManager;
   late Widget toDisplay;
   Ressources ressources = Ressources(); //Sert au chargement des images en mémoire
+  final TransformationController _transformController = TransformationController();
 
   _Display({required this.levelManager})
   {
@@ -79,7 +80,7 @@ class _Display extends State<Display>
             fit: StackFit.passthrough,
             children: [
               InteractiveViewer(
-                  boundaryMargin: const EdgeInsets.all(3000),
+                  boundaryMargin: EdgeInsets.all(128.0 * levelManager.getCurrentLevel().width / _transformController.value.getMaxScaleOnAxis()),
                   minScale: 0.25,
                   maxScale: 2.5,
                   child: CustomPaint(
@@ -111,6 +112,7 @@ class _Display extends State<Display>
   void joystickCallBack(int direction)
   {
     setState(() {
+      AnimationStep.animationStep = (AnimationStep.animationStep + 1) % 3;
       levelManager.getCurrentLevel().player?.moveEntity(direction);
     });
   }
@@ -178,9 +180,4 @@ class Menu extends StatelessWidget
             ])
     );
   }
-
 }
-
-
-
-

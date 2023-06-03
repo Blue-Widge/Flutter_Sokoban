@@ -1,3 +1,4 @@
+import 'package:flutter/scheduler.dart' show Ticker, TickerCallback;
 import 'Levels.dart';
 
 class Entity
@@ -87,13 +88,13 @@ class MovableEntity extends Entity
 
 class PlayerEntity extends MovableEntity
 {
-  int lastMove = DirectionType.DOWN;
+  int currentMove = DirectionType.DOWN;
 
   PlayerEntity({required super.row, required super.column, required super.bloc, required super.currentLevel});
 
   @override bool moveEntity(int direction)
   {
-    lastMove = direction;
+    currentMove = direction;
     return super.moveEntity(direction);
   }
 }

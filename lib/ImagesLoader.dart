@@ -20,11 +20,12 @@ class Ressources {
   //Lance le chargement asynchrone des images
   Future<void> prepare() async
   {
+    List<String> test = List.empty(growable: true);
     playerSprites = await Future.wait(List<Future<ui.Image>>.generate(DirectionType.IDLE * 3, (direction)
       {
         String? frDirection;
-
-        switch(direction % 4)
+        int spriteIndex = direction % 3;
+        switch(direction ~/ 3)
         {
           case DirectionType.UP:
             frDirection = "haut";
@@ -39,7 +40,8 @@ class Ressources {
             frDirection = "gauche";
             break;
         }
-        return _loadImage('assets/sprites/${frDirection}_${direction % 3}.png');
+        test.add("assets/sprites/${frDirection}_${spriteIndex}.png");
+        return _loadImage('assets/sprites/${frDirection}_${spriteIndex}.png');
       })
     );
     crate = await _loadImage('assets/sprites/caisse.png');
@@ -70,18 +72,23 @@ class Ressources {
 }
 
 //La zone de dessin
-class MyPainter extends CustomPainter {
+class MyPainter extends CustomPainter
+{
   double height;
   double width;
   Ressources ressources;
   LevelManager levelManager;
-  MyPainter(this.height, this.width, this.ressources, this.levelManager);
+  late int playerLastMove;
+
+  MyPainter(this.height, this.width, this.ressources, this.levelManager)
+  {
+    playerLastMove = levelManager.getCurrentLevel().player!.currentMove;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
     //Si les ressources ne sont pas prêtes, ou qu'il y a un problème, on sort de la fonction
     if ((levelManager.isLevelParsed() == false) || (!ressources.prepared) ||(ressources.playerSprites==null)||(ressources.crate==null)) return;
-
     Level currentLevel = levelManager.getCurrentLevel();
 
     Rect srcRect = const Rect.fromLTWH(0, 0, 128, 128);
@@ -112,7 +119,9 @@ class MyPainter extends CustomPainter {
             img = ressources.objective;
             break;
           case BlocType.PLAYER:
-            img = ressources.playerSprites![levelManager.getCurrentLevel().player!.lastMove]!;
+            var player = levelManager.getCurrentLevel().player!;
+            img = ressources.playerSprites![player.currentMove * 3 + AnimationStep.animationStep]!;
+            playerLastMove = player.currentMove;
             switch((currentLevel.blocsGrid[i][j] as MovableEntity).onBloc)
             {
               case BlocType.OBJECTIVE:
@@ -145,4 +154,9 @@ class MyPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
   }
+}
+
+class AnimationStep
+{
+  static int animationStep = 0;
 }
