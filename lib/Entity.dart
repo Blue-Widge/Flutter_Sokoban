@@ -23,19 +23,19 @@ class MovableEntity extends Entity
   {
     late Entity obstacle;
 
-    if (direction == DirectionType.UP)
+    if (direction == DirectionType.RIGHT)
     {
       obstacle = currentLevel.blocsGrid[posX][posY + 1];
     }
-    else if (direction == DirectionType.RIGHT)
+    else if (direction == DirectionType.DOWN)
     {
       obstacle = currentLevel.blocsGrid[posX + 1][posY];
     }
-    else if (direction == DirectionType.DOWN)
+    else if (direction == DirectionType.LEFT)
     {
       obstacle = currentLevel.blocsGrid[posX][posY - 1];
     }
-    else if (direction == DirectionType.LEFT)
+    else if (direction == DirectionType.UP)
     {
       obstacle = currentLevel.blocsGrid[posX - 1][posY];
     }
@@ -47,28 +47,42 @@ class MovableEntity extends Entity
     if (!moveable(direction))
       return false;
 
+    late final previousBloc;
+
     bool gotOnObjective = false;
-    if (direction == DirectionType.UP)
+    if (direction == DirectionType.RIGHT)
     {
       gotOnObjective = currentLevel.blocsGrid[posX][posY + 1].bloc == BlocType.OBJECTIVE;
-      currentLevel.blocsGrid[posX][posY + 1] = this;
-    }
-    else if (direction == DirectionType.RIGHT)
-    {
-      gotOnObjective = currentLevel.blocsGrid[posX + 1][posY].bloc == BlocType.OBJECTIVE;
-      currentLevel.blocsGrid[posX + 1][posY] = this;
+      previousBloc = currentLevel.blocsGrid[posX][posY + 1];
+      this.posY += 1;
+      currentLevel.blocsGrid[posX][posY] = this;
+      currentLevel.blocsGrid[posX][posY - 1] = Entity(posX: posX, posY: posY - 1, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
     }
     else if (direction == DirectionType.DOWN)
     {
-      gotOnObjective = currentLevel.blocsGrid[posX][posY - 1].bloc == BlocType.OBJECTIVE;
-      currentLevel.blocsGrid[posX][posY - 1] = this;
+      gotOnObjective = currentLevel.blocsGrid[posX + 1][posY].bloc == BlocType.OBJECTIVE;
+      previousBloc = currentLevel.blocsGrid[posX + 1][posY];
+      this.posX += 1;
+      currentLevel.blocsGrid[posX][posY] = this;
+      currentLevel.blocsGrid[posX - 1][posY] = Entity(posX: posX - 1, posY: posY, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
     }
     else if (direction == DirectionType.LEFT)
     {
-      gotOnObjective = currentLevel.blocsGrid[posX - 1][posY].bloc == BlocType.OBJECTIVE;
-      currentLevel.blocsGrid[posX - 1][posY] = this;
+      gotOnObjective = currentLevel.blocsGrid[posX][posY - 1].bloc == BlocType.OBJECTIVE;
+      previousBloc = currentLevel.blocsGrid[posX][posY - 1] ;
+      this.posY -= 1;
+      currentLevel.blocsGrid[posX][posY] = this;
+      currentLevel.blocsGrid[posX][posY + 1] = Entity(posX: posX, posY: posY + 1, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
     }
-    currentLevel.blocsGrid[posX][posY] = Entity(posX: posX, posY: posY, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
+    else if (direction == DirectionType.UP)
+    {
+      gotOnObjective = currentLevel.blocsGrid[posX - 1][posY].bloc == BlocType.OBJECTIVE;
+      previousBloc = currentLevel.blocsGrid[posX - 1][posY] ;
+      this.posX -= 1;
+      currentLevel.blocsGrid[posX][posY] = this;
+      currentLevel.blocsGrid[posX + 1][posY] = Entity(posX: posX + 1, posY: posY, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
+    }
+    //currentLevel.blocsGrid[posX][posY] = Entity(posX: posX, posY: posY, bloc: onObjective ? BlocType.OBJECTIVE : BlocType.GROUND, currentLevel: currentLevel);
     onObjective = gotOnObjective;
     return true;
   }

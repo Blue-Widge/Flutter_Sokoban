@@ -90,7 +90,7 @@ class Level
                   (levelGrid[row][column] == BlocType.BOX) ?
                   MovableEntity(posX: row, posY: column, bloc: BlocType.BOX, currentLevel: this) :
                   (levelGrid[row][column] == BlocType.PLAYER) ?
-                  PlayerEntity(posX: row, posY: column, bloc: BlocType.PLAYER, currentLevel: this) :
+                  player = PlayerEntity(posX: row, posY: column, bloc: BlocType.PLAYER, currentLevel: this) :
                   Entity(posX: row,
                       posY: column,
                       bloc: levelGrid[row][column],
@@ -122,7 +122,7 @@ class Level
 
 class LevelManager
 {
-  late List<Level>? _levels;
+  List<Level>? _levels;
   int currentLevel = 1;
 
   LevelManager({required String levelsPath})
@@ -141,7 +141,7 @@ class LevelManager
   }
 
   void isLevelParsed() => _levels != null;
-
+  int getNumberOfLevels() => _levels!.length;
   void setLevel(int levelNumber) => currentLevel = levelNumber;
 
   Future<void> _parseLevels(String levelsPath) async

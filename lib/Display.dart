@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'ImagesLoader.dart';
 import 'Levels.dart';
+import 'JoystickHandler.dart';
+
 class Display extends StatefulWidget
 {
   final LevelManager levelManager;
@@ -22,24 +24,9 @@ class _Display extends State<Display>
 
   void newGameCallBack()
   {
-    setState(()
-    {
-      levelManager.chargeLevel(0);
-
-      toDisplay = Container(
-        color: Colors.black26,
-        child: InteractiveViewer(
-            boundaryMargin: const EdgeInsets.all(3000),
-            minScale: 0.25,
-            maxScale: 2.5,
-            child: CustomPaint(
-                painter:MyPainter(MediaQuery.of(context).size.height-56-24, MediaQuery.of(context).size.width, ressources, levelManager)
-            )
-        ),
-      );
-
-
-    });
+    //TODO: vide dataBase
+    levelManager.setLevel(0);
+    displayLevel(levelManager.currentLevel);
   }
   void continueCallBack()
   {
@@ -49,10 +36,68 @@ class _Display extends State<Display>
   }
   void selectLevelCallBack()
   {
+    int nbLevels = levelManager.getNumberOfLevels();
+    List<Widget> buttons = List.generate(nbLevels, (index) =>
+        FloatingActionButton.extended(
+          onPressed: () {
+            displayLevel(index);
+          },
+          extendedPadding: EdgeInsets.all(30),
+          label: Text("Level $index"),
+          icon: const Icon(Icons.play_arrow),
+          backgroundColor: Colors.deepOrangeAccent,
+          foregroundColor: Colors.white,)
+      );
     setState(() {
-      toDisplay = Container(child: Text("test"),);
+      toDisplay = Container(
+        color: Colors.black26,
+        child: SingleChildScrollView(
+          child: Wrap(
+            direction: Axis.vertical,
+            alignment: WrapAlignment.center,
+            runAlignment: WrapAlignment.center,
+            spacing: 20,
+            runSpacing: 20,
+            children: buttons,
+          )
+        ),
+      );
     });
   }
+
+  void displayLevel(int levelNumber){
+    levelManager.setLevel(levelNumber);
+    setState(() {
+      toDisplay = Container(
+          color: Colors.black26,
+          child: Stack(
+            alignment: Alignment.bottomLeft,
+            fit: StackFit.passthrough,
+            children: [
+              InteractiveViewer(
+                  boundaryMargin: const EdgeInsets.all(3000),
+                  minScale: 0.25,
+                  maxScale: 2.5,
+                  child: CustomPaint(
+                      painter:MyPainter(MediaQuery.of(context).size.height-56-24, MediaQuery.of(context).size.width, ressources, levelManager)
+                  )
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: JoystickHandler(movePlayerCallback: joystickCallBack),
+              )],
+          )
+      );
+    });
+  }
+
+  void joystickCallBack(int direction)
+  {
+    setState(() {
+      levelManager.getLevel(levelManager.currentLevel).player?.moveEntity(direction);
+    });
+  }
+
   @override
   void initState()
   {

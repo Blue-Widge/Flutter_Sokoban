@@ -1,6 +1,6 @@
 import 'Display.dart';
 import 'package:flutter/material.dart';
-import 'JoystickHandler.dart';
+
 import 'Levels.dart';
 
 void main() {
@@ -68,11 +68,10 @@ class _MyHomePageState extends State<MyHomePage>
       ),
       body:
         ConstrainedBox(
-          constraints: BoxConstraints.expand(),
-          child: Stack(children: [Display(levelManager: levelManager), JoystickHandler(movePlayerCallback : levelManager.getLevel(levelManager.currentLevel).player?.moveEntity)
-        ]
-          )
+          constraints: const BoxConstraints.expand(),
+          child: Display(levelManager: levelManager)
         )
+
     );
   }
 }
