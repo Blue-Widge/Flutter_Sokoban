@@ -83,7 +83,7 @@ class _Display extends State<Display>
             fit: StackFit.passthrough,
             children: [
               InteractiveViewer(
-                  boundaryMargin: EdgeInsets.all(128.0 * levelManager.getCurrentLevel().width / _transformController.value.getMaxScaleOnAxis()),
+                  boundaryMargin: EdgeInsets.all(50.0 * levelManager.getCurrentLevel().width / _transformController.value.getMaxScaleOnAxis()),
                   minScale: 0.25,
                   maxScale: 2.5,
                   child: CustomPaint(
