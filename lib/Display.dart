@@ -24,7 +24,7 @@ class _Display extends State<Display>
 
   void newGameCallBack()
   {
-    //TODO: vide dataBase
+    //TODO: clear dataBase
     levelManager.setLevel(0);
     displayLevel(levelManager.currentLevel);
   }

@@ -95,7 +95,7 @@ class Level
                       posY: column,
                       bloc: levelGrid[row][column],
                       currentLevel: this,
-                      oversteppable: (levelGrid[row][column] == BlocType.GROUND))
+                      oversteppable: (levelGrid[row][column] == BlocType.GROUND || levelGrid[row][column] == BlocType.OBJECTIVE))
               )
           );
           initialized = true;

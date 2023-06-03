@@ -1,9 +1,14 @@
-import 'Display.dart';
 import 'package:flutter/material.dart';
+import 'Display.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:sokoban/LevelsDb.dart';
 
 import 'Levels.dart';
-
-void main() {
+import 'BoxDb.dart';
+void main() async{
+  await Hive.initFlutter();
+  Hive.registerAdapter(LevelsDbAdapter());
+  boxDb = await Hive.openBox<LevelsDb>("boxDb");
   runApp(const MyApp());
 }
 
