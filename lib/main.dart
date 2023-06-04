@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:sokoban/Entity.dart';
 import 'Display.dart';
@@ -7,10 +8,13 @@ import 'Entity.dart';
 
 import 'Levels.dart';
 import 'BoxDb.dart';
+import 'Sound.dart';
+
 void main() async{
   await Hive.initFlutter();
   Hive.registerAdapter(LevelsDbAdapter());
   boxDb = await Hive.openBox<LevelsDb>("boxDb");
+  audioPlayerHandler = AudioPlayerHandler();
   runApp(const MyApp());
 }
 
