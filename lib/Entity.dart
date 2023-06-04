@@ -85,12 +85,6 @@ class MovableEntity extends Entity
       currentLevel.blocsGrid[row + 1][column] = Entity(row: row + 1, column: column, bloc: onBloc, currentLevel: currentLevel, oversteppable: true);
     }
     onBloc = gotOnBloc;
-    String nbInDb = boxDb.length.toString();
-    if(boxDb.length > 100)
-      boxDb.delete('key_level_$curentLevelNum+_0');
-    String key = 'key_level_$curentLevelNum+_$nbInDb';
-    List<List<String>> blocGridStr = List<List<String>>.generate(currentLevel.blocsGrid.length, (i) => List<String>.generate(currentLevel.blocsGrid[i].length, (j) => currentLevel.blocsGrid[i][j].bloc));
-    boxDb.put(key, LevelsDb(currentLevel: curentLevelNum, previousBlocsGrids: blocGridStr));
 
     return true;
   }

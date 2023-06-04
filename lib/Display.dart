@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'LevelsDb.dart';
 import 'BoxDb.dart';
 import 'ImagesLoader.dart';
 import 'Levels.dart';
@@ -16,6 +17,7 @@ class _Display extends State<Display>
 {
   late LevelManager levelManager;
   late Widget toDisplay;
+  MovementSaver movementSaver = MovementSaver();
   Ressources ressources = Ressources(); //Sert au chargement des images en mémoire
   final TransformationController _transformController = TransformationController();
 
@@ -32,6 +34,8 @@ class _Display extends State<Display>
   }
   void continueCallBack()
   {
+    String key = 'key_level_${levelManager.currentLevel.toString()}';
+    LevelsDb level = boxDb.get(key);
     if (levelManager.currentLevel != 0 || TempGameData.moved)
       levelManager.chargeLevel(levelManager.currentLevel, false);
     setState(()
@@ -45,6 +49,7 @@ class _Display extends State<Display>
     List<Widget> buttons = List.generate(nbLevels, (index) =>
         FloatingActionButton.extended(
           onPressed: () {
+            boxDb.clear();
             levelManager.chargeLevel(levelManager.currentLevel, true);
             displayLevel(index);
           },
@@ -113,7 +118,9 @@ class _Display extends State<Display>
   {
     setState(() {
       AnimationStep.animationStep = (AnimationStep.animationStep + 1) % 3;
-      levelManager.getCurrentLevel().player!.moveEntity(direction, levelManager.currentLevel);
+      if(levelManager.getCurrentLevel().player!.moveEntity(direction, levelManager.currentLevel)){
+        movementSaver.saveData(levelManager.currentLevel, direction);
+      }
     });
   }
 

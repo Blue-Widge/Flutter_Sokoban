@@ -6,11 +6,11 @@ part 'LevelsDb.g.dart';
 class LevelsDb {
   LevelsDb({
     required this.currentLevel,
-    required this.previousBlocsGrids
+    required this.previousMovements
   });
   @HiveField(0)
   int currentLevel;
 
   @HiveField(1)
-  List<List<String>> previousBlocsGrids;
+  List<int> previousMovements;
 }

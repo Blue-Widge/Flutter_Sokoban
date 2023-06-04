@@ -18,9 +18,7 @@ class LevelsDbAdapter extends TypeAdapter<LevelsDb> {
     };
     return LevelsDb(
       currentLevel: fields[0] as int,
-      previousBlocsGrids: (fields[1] as List)
-          .map((dynamic e) => (e as List).cast<String>())
-          .toList(),
+      previousMovements: (fields[1] as List).cast<int>(),
     );
   }
 
@@ -31,7 +29,7 @@ class LevelsDbAdapter extends TypeAdapter<LevelsDb> {
       ..writeByte(0)
       ..write(obj.currentLevel)
       ..writeByte(1)
-      ..write(obj.previousBlocsGrids);
+      ..write(obj.previousMovements);
   }
 
   @override

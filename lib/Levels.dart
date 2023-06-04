@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'LevelsDb.dart';
 import 'BoxDb.dart';
@@ -15,7 +16,7 @@ class Level
 
   Level({required this.height, required this.width, required this.levelGrid}) {initializeGrid();}
 
-  void checkInsideOrOutside()
+  void checkInsideOrOutside(List<String> levelGrid)
   {
     for(int i = 0; i < height; ++i)
     {
@@ -84,7 +85,7 @@ class Level
     try {
       if (!initialized)
         {
-          checkInsideOrOutside();
+          checkInsideOrOutside(this.levelGrid);
 
           blocsGrid = List<List<Entity>>.generate(height,
                   (row) =>
@@ -110,6 +111,7 @@ class Level
       print("Couldn't load level, try checking the json - ERROR : $e at Line - $stackTrace");
     }
   }
+
 
   void resetLevel() async
   {
@@ -185,15 +187,6 @@ class LevelManager
   void chargeLevel(int levelNumber, bool addToDb)
   {
     setLevel(levelNumber);
-    if(addToDb)
-    {
-      //Add to the DB new initialized grid
-      String nbInDb = boxDb.length.toString();
-      String key = 'key_level_$levelNumber+_$nbInDb';
-      List<List<String>> blocGridStr = List<List<String>>.generate(_levels![levelNumber].blocsGrid.length, (i) => List<String>.generate(_levels![levelNumber].blocsGrid[i].length, (j) => _levels![levelNumber].blocsGrid[i][j].bloc));
-      boxDb.put(key, LevelsDb(currentLevel: levelNumber, previousBlocsGrids: blocGridStr));
-    }
-
 
     if (!_levels![currentLevel].initialized)
     {
@@ -242,4 +235,21 @@ class DirectionType
   static const int DOWN = 2;
   static const int LEFT = 3;
   static int IDLE = 4;
+}
+
+class MovementSaver
+{
+  late List<int> movements;
+  MovementSaver()
+  {
+    movements = List<int>.empty(growable: true);
+  }
+  void saveData(int currentLevelNum, int direction)
+  {
+    movements.add(direction);
+    if(movements.length > 100)
+      movements.removeAt(0);
+    String key = 'key_level_${currentLevelNum.toString()}';
+    boxDb.put(key, LevelsDb(currentLevel: currentLevelNum, previousMovements: movements));
+  }
 }
