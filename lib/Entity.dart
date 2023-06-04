@@ -88,7 +88,7 @@ class MovableEntity extends Entity
 class PlayerEntity extends MovableEntity
 {
   int currentMove = DirectionType.DOWN;
-
+  int movementCount = 0;
   PlayerEntity({required super.row, required super.column, required super.bloc, required super.currentLevel});
 
   @override bool moveEntity(int direction)
