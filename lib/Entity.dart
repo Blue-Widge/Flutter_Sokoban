@@ -18,7 +18,7 @@ class MovableEntity extends Entity
 {
   String onBloc = BlocType.GROUND;
 
-  MovableEntity({required super.row, required super.column, required super.bloc, required super.currentLevel, super.oversteppable});
+  MovableEntity({required super.row, required super.column, required super.bloc, required super.currentLevel, super.oversteppable, required this.onBloc});
 
   @override bool moveable(int direction)
   {
@@ -88,7 +88,7 @@ class PlayerEntity extends MovableEntity
 {
   int currentMove = DirectionType.DOWN;
   int movementCount = 0;
-  PlayerEntity({required super.row, required super.column, required super.bloc, required super.currentLevel});
+  PlayerEntity({required super.row, required super.column, required super.bloc, required super.currentLevel, required super.onBloc});
 
   @override bool moveEntity(int direction)
   {

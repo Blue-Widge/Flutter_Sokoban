@@ -17,7 +17,6 @@ class _Display extends State<Display>
 {
   late LevelManager levelManager;
   late Widget toDisplay;
-  late MovementsSaver movementSaver;
   Ressources ressources = Ressources(); //Sert au chargement des images en mémoire
   final TransformationController _transformController = TransformationController();
   int movementCount = 0;
@@ -25,28 +24,26 @@ class _Display extends State<Display>
   _Display({required this.levelManager})
   {
     ressources.prepare().then((value) => setState((){})); //Une fois les images chargées, on actualise
+
   }
 
   void newGameCallBack()
   {
     boxDb.clear();
     levelManager.chargeLevel(0);
-    levelManager.getCurrentLevel().resetLevel();
-    movementSaver = MovementsSaver();
-    movementSaver.saveData(0, levelManager.getCurrentLevel().levelGrid);
+    levelManager.getCurrentLevel(ignoreCompleted: true).resetLevel();
+    levelManager.movementsSaver = MovementsSaver();
+    levelManager.movementsSaver.saveData(0, levelManager.getCurrentLevel().levelGrid);
     displayLevel(levelManager.currentLevel);
   }
   void continueCallBack()
   {
-    movementSaver = MovementsSaver();
-    int currentLevelNum = movementSaver.getCurrentLevelNum();
+    levelManager.movementsSaver = MovementsSaver();
+    int currentLevelNum = levelManager.movementsSaver.getCurrentLevelNum();
     levelManager.chargeLevel(currentLevelNum);
-    if (movementSaver.needLoadLevel(currentLevelNum))
-      movementSaver.chargeLevelState(levelManager.getCurrentLevel(), currentLevelNum);
-    setState(()
-    {
-      displayLevel(levelManager.currentLevel);
-    });
+    if (levelManager.movementsSaver.needLoadLevel(currentLevelNum))
+      levelManager.movementsSaver.chargeLevelState(levelManager.getCurrentLevel(), currentLevelNum);
+    displayLevel(levelManager.currentLevel);
   }
   void selectLevelCallBack()
   {
@@ -56,10 +53,10 @@ class _Display extends State<Display>
           onPressed: ()
           {
             levelManager.chargeLevel(index);
-            levelManager.getCurrentLevel().resetLevel();
-            movementSaver = MovementsSaver();
-            movementSaver.clearLevelData(index);
-            movementSaver.saveData(index, levelManager.getCurrentLevel().levelGrid);
+            levelManager.getCurrentLevel(ignoreCompleted: true).resetLevel();
+            levelManager.movementsSaver = MovementsSaver();
+            levelManager.movementsSaver.clearLevelData(index);
+            levelManager.movementsSaver.saveData(index, levelManager.getCurrentLevel().levelGrid);
             displayLevel(index);
           },
           extendedPadding: EdgeInsets.all(30),
@@ -116,7 +113,8 @@ class _Display extends State<Display>
                       label: const Text("Undo"),
                       onPressed: () => setState(()
                       {
-                        movementSaver.undoLastMove(levelManager.getCurrentLevel());
+                        levelManager.movementsSaver.undoLastMove(levelManager.getCurrentLevel());
+                        levelManager.movementsSaver.overrideData(levelManager.currentLevel, levelManager.getCurrentLevel().getBlocsAsStrings());
                         displayLevel(levelManager.currentLevel);
                       }),
                       backgroundColor: Colors.deepOrangeAccent,
@@ -145,8 +143,8 @@ class _Display extends State<Display>
                   onPressed: () => setState(()
                   {
                     levelManager.getCurrentLevel().resetLevel();
-                    movementSaver.clearLevelData(levelManager.currentLevel);
-                    movementSaver.saveData(levelManager.currentLevel, levelManager.getCurrentLevel().levelGrid);
+                    levelManager.movementsSaver.clearLevelData(levelManager.currentLevel);
+                    levelManager.movementsSaver.saveData(levelManager.currentLevel, levelManager.getCurrentLevel().levelGrid);
                     displayLevel(levelManager.currentLevel);
                   }),
                   backgroundColor: Colors.deepOrangeAccent,
@@ -171,13 +169,13 @@ class _Display extends State<Display>
       if(levelManager.getCurrentLevel().player!.moveEntity(direction))
       
       {
-        movementSaver.saveData(levelManager.currentLevel, levelManager.getCurrentLevel().getBlocsAsStrings());
+        levelManager.movementsSaver.saveData(levelManager.currentLevel, levelManager.getCurrentLevel().getBlocsAsStrings());
         levelManager.getCurrentLevel().player!.movementCount++;
         displayLevel(levelManager.currentLevel);
-        audioPlayerHandler.playMusic('assets/sound/footstep.wav');
+        audioPlayerHandler.playSound('assets/sound/footstep.wav');
       }else
       {
-        audioPlayerHandler.playMusic('assets/sound/bonk.wav');
+        audioPlayerHandler.playSound('assets/sound/bonk.wav');
       }
     });
   }

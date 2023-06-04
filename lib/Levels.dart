@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'gameData.dart';
 import 'BoxDb.dart';
 import 'Entity.dart';
+import 'Sound.dart';
 
 class Level
 {
@@ -137,17 +138,20 @@ class Level
 
   Entity chooseEntity(List<String> levelGrid, row, column)
   {
+    String onBloc = BlocType.OVERSTEPPABLE.contains(this.levelGrid[row][column]) ? this.levelGrid[row][column] : BlocType.GROUND; //to make sure onLoad the entity is charged on the native bloc
+
     return
-      (levelGrid[row][column] == BlocType.BOX) ?
-      MovableEntity(row: row, column: column, bloc: BlocType.BOX, currentLevel: this) :
-      (levelGrid[row][column] == BlocType.PLAYER) ?
-      player = PlayerEntity(row: row, column: column, bloc: BlocType.PLAYER, currentLevel: this) :
-      Entity(row: row,
-          column: column,
-          bloc: levelGrid[row][column],
-          currentLevel: this,
-          oversteppable: BlocType.OVERSTEPPABLE.contains(levelGrid[row][column])
-      );
+        (levelGrid[row][column] == BlocType.BOX) ?
+        MovableEntity(row: row, column: column, bloc: BlocType.BOX, currentLevel: this, onBloc: onBloc) :
+        (levelGrid[row][column] == BlocType.PLAYER) ?
+        player = PlayerEntity(row: row, column: column, bloc: BlocType.PLAYER, currentLevel: this, onBloc: onBloc) :
+        Entity(row: row,
+            column: column,
+            bloc: levelGrid[row][column],
+            currentLevel: this,
+            oversteppable: BlocType.OVERSTEPPABLE.contains(levelGrid[row][column])
+        );
+
   }
 
   List<String> getBlocsAsStrings()
@@ -172,6 +176,7 @@ class LevelManager
   List<Level>? _levels;
   int currentLevel = 0;
   int maxLevel = 0;
+  late MovementsSaver movementsSaver;
 
   LevelManager({required String levelsPath})
   {
@@ -225,14 +230,26 @@ class LevelManager
   {
     if (_levels![currentLevel].levelComplete())
     {
-      // #TODO launch congrats for finishing the level
-      currentLevel == maxLevel ? gameEnding : chargeLevel(currentLevel + 1);
+      if (currentLevel == maxLevel)
+        {
+          gameEnding;
+        }
+      else
+        {
+          chargeLevel(currentLevel + 1);
+          getCurrentLevel().resetLevel();
+          movementsSaver = MovementsSaver();
+          movementsSaver.clearLevelData(currentLevel);
+          movementsSaver.saveData(currentLevel, getCurrentLevel().levelGrid);
+        }
+      audioPlayerHandler.playMusic('assets/sound/happyWheelsWinningSound.mp3');
     }
   }
 
-  Level getCurrentLevel()
+  Level getCurrentLevel({bool ignoreCompleted = false})
   {
-    _checkLevelState();
+    if (!ignoreCompleted)
+      _checkLevelState();
     return _levels![currentLevel];
   }
 
@@ -267,6 +284,12 @@ class MovementsSaver
     boxDb.put(key, LevelsDb(currentLevel: currentLevelNum, levelGrids: currentLevelStates));
   }
 
+  void overrideData(int currentLevelNum, List<String> levelGrid)
+  {
+    String key = 'key_level_$currentLevelNum';
+    boxDb.put(key, LevelsDb(currentLevel: currentLevelNum, levelGrids: currentLevelStates));
+  }
+
   void undoLastMove(Level level)
   {
     if (currentLevelStates.length < 2)
@@ -284,6 +307,8 @@ class MovementsSaver
       }
     }
     level.player!.movementCount = moveCount - 1;
+
+
   }
 
   int getCurrentLevelNum()
