@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'LevelsDb.dart';
+import 'gameData.dart';
 import 'BoxDb.dart';
 import 'ImagesLoader.dart';
 import 'Levels.dart';
@@ -17,7 +17,7 @@ class _Display extends State<Display>
 {
   late LevelManager levelManager;
   late Widget toDisplay;
-  MovementSaver movementSaver = MovementSaver();
+  MovementsSaver movementSaver = MovementsSaver();
   Ressources ressources = Ressources(); //Sert au chargement des images en mémoire
   final TransformationController _transformController = TransformationController();
 
@@ -100,16 +100,47 @@ class _Display extends State<Display>
                 alignment: Alignment.bottomRight,
                 child: JoystickHandler(movePlayerCallback: joystickCallBack),
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: FloatingActionButton.extended(
+                      label: const Text("Undo"),
+                      onPressed: () => setState(()
+                      {
+                        levelManager.getCurrentLevel().player!.moveEntity(movementSaver.undoLastMove());
+                      }),
+                      backgroundColor: Colors.deepOrangeAccent,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: FloatingActionButton.extended(
+                      label: const Text("Menu"),
+                      onPressed: () => setState(()
+                      {
+                        toDisplay = Menu(newGameCallBack, continueCallBack, selectLevelCallBack);
+                      }),
+                      backgroundColor: Colors.deepOrangeAccent,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+
               Align(
-                alignment: Alignment.topRight,
+                alignment: Alignment.topLeft,
                 child: FloatingActionButton.extended(
+                  label: const Text("Reset"),
                   onPressed: () => setState(()
                   {
-                    toDisplay = Menu(newGameCallBack, continueCallBack, selectLevelCallBack);
+                    levelManager.getCurrentLevel().resetLevel();
                   }),
                   backgroundColor: Colors.deepOrangeAccent,
                   foregroundColor: Colors.white,
-                  label: const Text("Menu"),
                 ),
               ),
             ],
@@ -122,8 +153,9 @@ class _Display extends State<Display>
   {
     setState(() {
       AnimationStep.animationStep = (AnimationStep.animationStep + 1) % 3;
-      if(levelManager.getCurrentLevel().player!.moveEntity(direction, levelManager.currentLevel)){
-        movementSaver.saveData(levelManager.currentLevel, direction);
+      if(levelManager.getCurrentLevel().player!.moveEntity(direction))
+      {
+        movementSaver.saveData(levelManager.currentLevel, direction, levelManager.getCurrentLevel().getBlocsAsStrings());
       }
     });
   }

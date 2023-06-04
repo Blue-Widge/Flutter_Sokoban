@@ -1,8 +1,4 @@
-import 'package:flutter/scheduler.dart' show Ticker, TickerCallback;
 import 'Levels.dart';
-import 'BoxDb.dart';
-import 'LevelsDb.dart';
-
 class Entity
 {
   int row;
@@ -13,10 +9,9 @@ class Entity
 
   Entity({required this.row, required this.column, required this.bloc, required this.currentLevel, this.oversteppable = false});
 
+  bool moveable(int direction) => false;
 
-  bool moveable(int direction, int currentLevelNum) => false;
-
-  bool moveEntity(int direction, int curentLevelNum) => false;
+  bool moveEntity(int direction) => false;
 }
 
 class MovableEntity extends Entity
@@ -25,7 +20,7 @@ class MovableEntity extends Entity
 
   MovableEntity({required super.row, required super.column, required super.bloc, required super.currentLevel, super.oversteppable});
 
-  @override bool moveable(int direction, int currentLevelNum)
+  @override bool moveable(int direction)
   {
     Entity? obstacle;
 
@@ -47,12 +42,12 @@ class MovableEntity extends Entity
     }
     else
       return false;
-    return obstacle.oversteppable || obstacle.moveEntity(direction, currentLevelNum);
+    return obstacle.oversteppable || obstacle.moveEntity(direction);
   }
 
-  @override bool moveEntity(int direction, int curentLevelNum)
+  @override bool moveEntity(int direction)
   {
-    if (!moveable(direction, curentLevelNum))
+    if (!moveable(direction))
       return false;
 
     late String gotOnBloc;
@@ -96,9 +91,9 @@ class PlayerEntity extends MovableEntity
 
   PlayerEntity({required super.row, required super.column, required super.bloc, required super.currentLevel});
 
-  @override bool moveEntity(int direction, int curentLevelNum)
+  @override bool moveEntity(int direction)
   {
-    currentMove = direction;
-    return super.moveEntity(direction, curentLevelNum);
+    currentMove = direction == DirectionType.IDLE ? currentMove : direction;
+    return super.moveEntity(direction);
   }
 }

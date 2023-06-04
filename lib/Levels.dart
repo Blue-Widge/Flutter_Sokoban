@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'LevelsDb.dart';
+import 'gameData.dart';
 import 'BoxDb.dart';
 import 'Entity.dart';
 
@@ -149,6 +149,22 @@ class Level
           oversteppable: BlocType.OVERSTEPPABLE.contains(levelGrid[row][column])
       );
   }
+
+  List<String> getBlocsAsStrings()
+  {
+    List<String> blocsAsStrings = List<String>.empty(growable: true);
+    for(int i = 0; i < height; ++i)
+      {
+        int length = blocsGrid[i].length;
+        String currentString = "";
+        for(int j = 0; j < length; ++j)
+          {
+            currentString += blocsGrid[i][j].bloc;
+          }
+        blocsAsStrings.add(currentString);
+      }
+    return blocsAsStrings;
+  }
 }
 
 class LevelManager
@@ -249,19 +265,32 @@ class DirectionType
   static int IDLE = 4;
 }
 
-class MovementSaver
+class MovementsSaver
 {
   late List<int> movements;
-  MovementSaver()
+
+  MovementsSaver()
   {
     movements = List<int>.empty(growable: true);
   }
-  void saveData(int currentLevelNum, int direction)
+
+  get getLastReversedDirection => (movements.last + 2) % 4;
+
+  void saveData(int currentLevelNum, int direction, levelGrid)
   {
     movements.add(direction);
     if(movements.length > 100)
-      movements.removeAt(0);
-    String key = 'key_level_${currentLevelNum.toString()}';
-    boxDb.put(key, LevelsDb(currentLevel: currentLevelNum, previousMovements: movements));
+      movements = movements.sublist(1, 101);
+    String key = 'key_level_$currentLevelNum';
+    boxDb.put(key, LevelsDb(currentLevel: currentLevelNum, currentLevelMoves: movements, levelGrid: levelGrid));
+  }
+
+  int undoLastMove()
+  {
+    if (movements.length == 0)
+      return DirectionType.IDLE;
+    int reversedLastMove = getLastReversedDirection;
+    movements = movements.sublist(0, movements.length - 1);
+    return reversedLastMove;
   }
 }
