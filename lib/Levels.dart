@@ -243,6 +243,86 @@ class LevelManager
   }
 
 }
+class MovementsSaver
+{
+  late List<List<String>> currentLevelStates;
+  MovementsSaver()
+  {
+    currentLevelStates = List<List<String>>.empty(growable: true);
+  }
+
+  bool needLoadLevel(int levelNumber)
+  {
+    LevelsDb level = boxDb.get('key_level_$levelNumber');
+    return (level.levelGrids.length != 0);
+  }
+
+  void saveData(int currentLevelNum, List<String> levelGrid)
+  {
+    currentLevelStates.add(levelGrid);
+    if(currentLevelStates.length > 100)
+      currentLevelStates = currentLevelStates.sublist(1, 101);
+
+    String key = 'key_level_$currentLevelNum';
+    boxDb.put(key, LevelsDb(currentLevel: currentLevelNum, levelGrids: currentLevelStates));
+  }
+
+  void undoLastMove(Level level)
+  {
+    if (currentLevelStates.length < 2)
+      return;
+
+    currentLevelStates = currentLevelStates.sublist(0, currentLevelStates.length - 1);
+    int moveCount = level.player!.movementCount;
+    int height = level.height;
+    for(int i = 0; i < height; ++i)
+    {
+      int length = level.blocsGrid[i].length;
+      for(int j = 0; j < length; ++j)
+      {
+        level.blocsGrid[i][j] = level.chooseEntity(currentLevelStates.last, i, j);
+      }
+    }
+    level.player!.movementCount = moveCount - 1;
+  }
+
+  int getCurrentLevelNum()
+  {
+    int boxDbLength = boxDb.length;
+    if (boxDbLength == -1)
+      return 0;
+    LevelsDb level = boxDb.getAt(boxDb.length - 1);
+    return level.currentLevel;
+  }
+
+  void chargeLevelState(Level level, int levelNumber)
+  {
+    LevelsDb levelDb = boxDb.get('key_level_$levelNumber');
+    int nbMoves = levelDb.levelGrids.length - 1;
+    List<String> levelGrid = levelDb.levelGrids[nbMoves];
+    currentLevelStates = levelDb.levelGrids;
+
+    int height = level.height;
+    for(int i = 0; i < height; ++i)
+    {
+      int length = level.blocsGrid[i].length;
+      for(int j = 0; j < length; ++j)
+      {
+        level.blocsGrid[i][j] = level.chooseEntity(levelGrid, i, j);
+      }
+    }
+    level.player!.movementCount = nbMoves;
+  }
+
+  void clearLevelData(int levelNumber)
+  {
+    LevelsDb? levelDb = boxDb.get('key_level_$levelNumber');
+    if (levelDb == null)
+      return;
+    levelDb.levelGrids.clear();
+    boxDb.put('key_level_$levelNumber', levelDb);
+  }
+}
 
 class BlocType
 {
@@ -263,34 +343,4 @@ class DirectionType
   static const int DOWN = 2;
   static const int LEFT = 3;
   static int IDLE = 4;
-}
-
-class MovementsSaver
-{
-  late List<int> movements;
-
-  MovementsSaver()
-  {
-    movements = List<int>.empty(growable: true);
-  }
-
-  get getLastReversedDirection => (movements.last + 2) % 4;
-
-  void saveData(int currentLevelNum, int direction, levelGrid)
-  {
-    movements.add(direction);
-    if(movements.length > 100)
-      movements = movements.sublist(1, 101);
-    String key = 'key_level_$currentLevelNum';
-    boxDb.put(key, LevelsDb(currentLevel: currentLevelNum, currentLevelMoves: movements, levelGrid: levelGrid));
-  }
-
-  int undoLastMove()
-  {
-    if (movements.length == 0)
-      return DirectionType.IDLE;
-    int reversedLastMove = getLastReversedDirection;
-    movements = movements.sublist(0, movements.length - 1);
-    return reversedLastMove;
-  }
 }

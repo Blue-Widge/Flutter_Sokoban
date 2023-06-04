@@ -18,21 +18,20 @@ class LevelsDbAdapter extends TypeAdapter<LevelsDb> {
     };
     return LevelsDb(
       currentLevel: fields[0] as int,
-      currentLevelMoves: (fields[2] as List).cast<int>(),
-      levelGrid: (fields[1] as List).cast<String>(),
+      levelGrids: (fields[1] as List)
+          .map((dynamic e) => (e as List).cast<String>())
+          .toList(),
     );
   }
 
   @override
   void write(BinaryWriter writer, LevelsDb obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(2)
       ..writeByte(0)
       ..write(obj.currentLevel)
       ..writeByte(1)
-      ..write(obj.levelGrid)
-      ..writeByte(2)
-      ..write(obj.currentLevelMoves);
+      ..write(obj.levelGrids);
   }
 
   @override

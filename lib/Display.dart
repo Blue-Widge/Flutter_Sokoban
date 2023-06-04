@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'gameData.dart';
 import 'BoxDb.dart';
 import 'ImagesLoader.dart';
 import 'Levels.dart';
@@ -18,9 +17,10 @@ class _Display extends State<Display>
 {
   late LevelManager levelManager;
   late Widget toDisplay;
-  MovementsSaver movementSaver = MovementsSaver();
+  late MovementsSaver movementSaver;
   Ressources ressources = Ressources(); //Sert au chargement des images en mémoire
   final TransformationController _transformController = TransformationController();
+  int movementCount = 0;
 
   _Display({required this.levelManager})
   {
@@ -29,17 +29,20 @@ class _Display extends State<Display>
 
   void newGameCallBack()
   {
-    boxDb.clear;
+    boxDb.clear();
     levelManager.chargeLevel(0);
     levelManager.getCurrentLevel().resetLevel();
+    movementSaver = MovementsSaver();
+    movementSaver.saveData(0, levelManager.getCurrentLevel().levelGrid);
     displayLevel(levelManager.currentLevel);
   }
   void continueCallBack()
   {
-    String key = 'key_level_${levelManager.currentLevel.toString()}';
-    LevelsDb level = boxDb.get(key);
-    if (levelManager.currentLevel != 0 || TempGameData.moved)
-      levelManager.chargeLevel(levelManager.currentLevel);
+    movementSaver = MovementsSaver();
+    int currentLevelNum = movementSaver.getCurrentLevelNum();
+    levelManager.chargeLevel(currentLevelNum);
+    if (movementSaver.needLoadLevel(currentLevelNum))
+      movementSaver.chargeLevelState(levelManager.getCurrentLevel(), currentLevelNum);
     setState(()
     {
       displayLevel(levelManager.currentLevel);
@@ -54,7 +57,9 @@ class _Display extends State<Display>
           {
             levelManager.chargeLevel(index);
             levelManager.getCurrentLevel().resetLevel();
-            boxDb.clear();
+            movementSaver = MovementsSaver();
+            movementSaver.clearLevelData(index);
+            movementSaver.saveData(index, levelManager.getCurrentLevel().levelGrid);
             displayLevel(index);
           },
           extendedPadding: EdgeInsets.all(30),
@@ -111,7 +116,8 @@ class _Display extends State<Display>
                       label: const Text("Undo"),
                       onPressed: () => setState(()
                       {
-                        levelManager.getCurrentLevel().player!.moveEntity(movementSaver.undoLastMove());
+                        movementSaver.undoLastMove(levelManager.getCurrentLevel());
+                        displayLevel(levelManager.currentLevel);
                       }),
                       backgroundColor: Colors.deepOrangeAccent,
                       foregroundColor: Colors.white,
@@ -139,11 +145,19 @@ class _Display extends State<Display>
                   onPressed: () => setState(()
                   {
                     levelManager.getCurrentLevel().resetLevel();
+                    movementSaver.clearLevelData(levelManager.currentLevel);
+                    movementSaver.saveData(levelManager.currentLevel, levelManager.getCurrentLevel().levelGrid);
+                    displayLevel(levelManager.currentLevel);
                   }),
                   backgroundColor: Colors.deepOrangeAccent,
                   foregroundColor: Colors.white,
                 ),
               ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Text("Movement : ${levelManager.getCurrentLevel().player!.movementCount}",
+                style: const TextStyle(color:Colors.white)),
+              )
             ],
           ),
       );
@@ -157,6 +171,9 @@ class _Display extends State<Display>
       if(levelManager.getCurrentLevel().player!.moveEntity(direction))
       
       {
+        movementSaver.saveData(levelManager.currentLevel, levelManager.getCurrentLevel().getBlocsAsStrings());
+        levelManager.getCurrentLevel().player!.movementCount++;
+        displayLevel(levelManager.currentLevel);
         audioPlayerHandler.playMusic('assets/sound/footstep.wav');
         movementSaver.saveData(levelManager.currentLevel, direction, levelManager.getCurrentLevel().getBlocsAsStrings());
       }else
@@ -178,12 +195,6 @@ class _Display extends State<Display>
   {
       return toDisplay;
   }
-}
-
-class TempGameData
-{
-  static bool _hasMoved = false;
-  static get moved => _hasMoved;
 }
 
 class Menu extends StatelessWidget
