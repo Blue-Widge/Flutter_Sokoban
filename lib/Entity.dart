@@ -80,7 +80,6 @@ class MovableEntity extends Entity
       currentLevel.blocsGrid[row + 1][column] = Entity(row: row + 1, column: column, bloc: onBloc, currentLevel: currentLevel, oversteppable: true);
     }
     onBloc = gotOnBloc;
-
     return true;
   }
 }

@@ -3,6 +3,7 @@ import 'BoxDb.dart';
 import 'ImagesLoader.dart';
 import 'Levels.dart';
 import 'JoystickHandler.dart';
+import 'Sound.dart';
 
 class Display extends StatefulWidget
 {
@@ -168,10 +169,16 @@ class _Display extends State<Display>
     setState(() {
       AnimationStep.animationStep = (AnimationStep.animationStep + 1) % 3;
       if(levelManager.getCurrentLevel().player!.moveEntity(direction))
+      
       {
         movementSaver.saveData(levelManager.currentLevel, levelManager.getCurrentLevel().getBlocsAsStrings());
         levelManager.getCurrentLevel().player!.movementCount++;
         displayLevel(levelManager.currentLevel);
+        audioPlayerHandler.playMusic('assets/sound/footstep.wav');
+        movementSaver.saveData(levelManager.currentLevel, direction, levelManager.getCurrentLevel().getBlocsAsStrings());
+      }else
+      {
+        audioPlayerHandler.playMusic('assets/sound/bonk.wav');
       }
     });
   }
