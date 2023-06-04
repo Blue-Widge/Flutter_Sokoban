@@ -175,7 +175,6 @@ class _Display extends State<Display>
         levelManager.getCurrentLevel().player!.movementCount++;
         displayLevel(levelManager.currentLevel);
         audioPlayerHandler.playMusic('assets/sound/footstep.wav');
-        movementSaver.saveData(levelManager.currentLevel, direction, levelManager.getCurrentLevel().getBlocsAsStrings());
       }else
       {
         audioPlayerHandler.playMusic('assets/sound/bonk.wav');
