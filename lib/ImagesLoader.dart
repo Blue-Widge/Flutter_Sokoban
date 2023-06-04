@@ -119,6 +119,9 @@ class MyPainter extends CustomPainter
           case BlocType.OBJECTIVE:
             img = ressources.objective;
             break;
+          case BlocType.HOLE:
+            img = ressources.hole;
+            break;
           case BlocType.PLAYER:
             var player = levelManager.getCurrentLevel().player!;
             img = ressources.playerSprites![player.currentMove * 3 + AnimationStep.animationStep]!;
@@ -137,18 +140,7 @@ class MyPainter extends CustomPainter
         canvas.drawImageRect(img!, srcRect, destRect, Paint());
       }
     }
-    //On dessine 2 sprites  aux coins de l'écran
-    //Rect srcRect = Rect.fromLTWH(0, 0, 128, 128); //On prend tout le sprites (128x128 pixels)
-    //Rect destRect1 = Rect.fromLTWH(0, 0, 50, 50); //On affichera le premier sprite en haut à gauche, dans un carré de 50x50 pixels
-    //Rect destRect2 = Rect.fromLTWH(width-50, height-50, 50, 50); //On affichera le deuxième sprite en bas à droite, dans un carré de 50x50 pixels
-    //Rect destRect3 = Rect.fromLTWH((width-50)/2, (height-50)/2, 50, 50); //On affichera un carré bleu en plein milieu de l'écran
-
-    //canvas.drawImageRect(ressources.player!, srcRect, destRect1, Paint());
-    //canvas.drawImageRect(ressources.crate!, srcRect, destRect2, Paint());
-
-    Paint paint = Paint();
-    paint.color = Colors.blue;
-    //canvas.drawRect(destRect3, paint);
+    Paint();
   }
 
   @override

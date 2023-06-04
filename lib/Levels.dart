@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'LevelsDb.dart';
 import 'BoxDb.dart';
@@ -16,7 +15,7 @@ class Level
 
   Level({required this.height, required this.width, required this.levelGrid}) {initializeGrid();}
 
-  void checkInsideOrOutside(List<String> levelGrid)
+  void checkInsideOrOutside()
   {
     for(int i = 0; i < height; ++i)
     {
@@ -84,27 +83,21 @@ class Level
   {
     try {
       if (!initialized)
-        {
-          checkInsideOrOutside(this.levelGrid);
+      {
+        checkInsideOrOutside();
 
-          blocsGrid = List<List<Entity>>.generate(height,
-                  (row) =>
-              List<Entity>.generate(levelGrid[row].length,
-                      (column) =>
-                  (levelGrid[row][column] == BlocType.BOX) ?
-                  MovableEntity(row: row, column: column, bloc: BlocType.BOX, currentLevel: this) :
-                  (levelGrid[row][column] == BlocType.PLAYER) ?
-                  player = PlayerEntity(row: row, column: column, bloc: BlocType.PLAYER, currentLevel: this) :
-                  Entity(row: row,
-                      column: column,
-                      bloc: levelGrid[row][column],
-                      currentLevel: this,
-                      oversteppable: BlocType.OVERSTEPPABLE.contains(levelGrid[row][column])
-                  )
-              )
-          );
-          initialized = true;
-        }
+        blocsGrid = List<List<Entity>>.generate(height,
+                (row) =>
+            List<Entity>.generate(levelGrid[row].length,
+                    (column) => chooseEntity(levelGrid, row, column)
+            )
+        );
+        initialized = true;
+      }
+      else
+      {
+        resetLevel();
+      }
     }
     catch(e, stackTrace)
     {
@@ -112,31 +105,49 @@ class Level
     }
   }
 
-
-  void resetLevel() async
+  void resetLevel()
   {
-    for(int i = 0; i < height; ++i)
+    if (!initialized)
+      initializeGrid();
+    else
+    {
+      for(int i = 0; i < height; ++i)
       {
-        for(int j = 0; j < blocsGrid[i].length; ++j)
-          {
-            blocsGrid[i][j].bloc = levelGrid[i][j];
-          }
+        int length = blocsGrid[i].length;
+        for(int j = 0; j < length; ++j)
+          blocsGrid[i][j] = chooseEntity(levelGrid, i, j);
       }
+    }
   }
 
   bool levelComplete()
   {
     for(int i = 0; i < height; ++i)
+    {
+      for(int j = 0; j < levelGrid[i].length; ++j)
       {
-        for(int j = 0; j < levelGrid[i].length; ++j)
-          {
-            if (levelGrid[i][j] == BlocType.OBJECTIVE && blocsGrid[i][j].bloc != BlocType.BOX)
-            {
-              return false;
-            }
-          }
+        if (levelGrid[i][j] == BlocType.OBJECTIVE && blocsGrid[i][j].bloc != BlocType.BOX)
+        {
+          return false;
+        }
       }
+    }
     return true;
+  }
+
+  Entity chooseEntity(List<String> levelGrid, row, column)
+  {
+    return
+      (levelGrid[row][column] == BlocType.BOX) ?
+      MovableEntity(row: row, column: column, bloc: BlocType.BOX, currentLevel: this) :
+      (levelGrid[row][column] == BlocType.PLAYER) ?
+      player = PlayerEntity(row: row, column: column, bloc: BlocType.PLAYER, currentLevel: this) :
+      Entity(row: row,
+          column: column,
+          bloc: levelGrid[row][column],
+          currentLevel: this,
+          oversteppable: BlocType.OVERSTEPPABLE.contains(levelGrid[row][column])
+      );
   }
 }
 
@@ -175,22 +186,22 @@ class LevelManager
     final data = await json.decode(response);
 
     _levels = List<Level>.from(data.map((level) =>
-      Level(
-          height: level['hauteur'],
-          width: level['largeur'],
-          levelGrid: List<String>.from(level['lignes'])
-      )
+        Level(
+            height: level['hauteur'],
+            width: level['largeur'],
+            levelGrid: List<String>.from(level['lignes'])
+        )
     ));
     maxLevel = _levels!.length;
   }
 
-  void chargeLevel(int levelNumber, bool addToDb)
+  void chargeLevel(int levelNumber)
   {
     setLevel(levelNumber);
 
     if (!_levels![currentLevel].initialized)
     {
-        _levels![currentLevel].initializeGrid();
+      _levels![currentLevel].initializeGrid();
     }
   }
 
@@ -199,7 +210,7 @@ class LevelManager
     if (_levels![currentLevel].levelComplete())
     {
       // #TODO launch congrats for finishing the level
-      currentLevel == maxLevel ? gameEnding : chargeLevel(currentLevel + 1, true);
+      currentLevel == maxLevel ? gameEnding : chargeLevel(currentLevel + 1);
     }
   }
 
@@ -225,6 +236,7 @@ class BlocType
   static const String BOX = '\$';
   static const String OBJECTIVE = '.';
   static const String PLAYER = '@';
+  static const String HOLE = '*';
   static final Set<String> OVERSTEPPABLE = {GROUND, OBJECTIVE};
 }
 

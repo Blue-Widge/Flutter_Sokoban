@@ -29,7 +29,8 @@ class _Display extends State<Display>
   void newGameCallBack()
   {
     boxDb.clear;
-    levelManager.chargeLevel(levelManager.currentLevel, true);
+    levelManager.chargeLevel(0);
+    levelManager.getCurrentLevel().resetLevel();
     displayLevel(levelManager.currentLevel);
   }
   void continueCallBack()
@@ -37,7 +38,7 @@ class _Display extends State<Display>
     String key = 'key_level_${levelManager.currentLevel.toString()}';
     LevelsDb level = boxDb.get(key);
     if (levelManager.currentLevel != 0 || TempGameData.moved)
-      levelManager.chargeLevel(levelManager.currentLevel, false);
+      levelManager.chargeLevel(levelManager.currentLevel);
     setState(()
     {
       displayLevel(levelManager.currentLevel);
@@ -48,9 +49,11 @@ class _Display extends State<Display>
     int nbLevels = levelManager.getNumberOfLevels();
     List<Widget> buttons = List.generate(nbLevels, (index) =>
         FloatingActionButton.extended(
-          onPressed: () {
+          onPressed: ()
+          {
+            levelManager.chargeLevel(index);
+            levelManager.getCurrentLevel().resetLevel();
             boxDb.clear();
-            levelManager.chargeLevel(levelManager.currentLevel, true);
             displayLevel(index);
           },
           extendedPadding: EdgeInsets.all(30),
@@ -76,16 +79,17 @@ class _Display extends State<Display>
     });
   }
 
-  void displayLevel(int levelNumber){
+  void displayLevel(int levelNumber)
+  {
     setState(() {
       toDisplay = Container(
-          color: Colors.black26,
+          color: Colors.black87,
           child: Stack(
             alignment: Alignment.bottomLeft,
             fit: StackFit.passthrough,
             children: [
               InteractiveViewer(
-                  boundaryMargin: EdgeInsets.all(128.0 * levelManager.getCurrentLevel().width / _transformController.value.getMaxScaleOnAxis()),
+                  boundaryMargin: EdgeInsets.all(50.0 * levelManager.getCurrentLevel().width / _transformController.value.getMaxScaleOnAxis()),
                   minScale: 0.25,
                   maxScale: 2.5,
                   child: CustomPaint(
