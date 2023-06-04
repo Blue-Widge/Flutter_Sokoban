@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'LevelsDb.dart';
+part of 'gameData.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
@@ -18,18 +18,21 @@ class LevelsDbAdapter extends TypeAdapter<LevelsDb> {
     };
     return LevelsDb(
       currentLevel: fields[0] as int,
-      previousMovements: (fields[1] as List).cast<int>(),
+      currentLevelMoves: (fields[2] as List).cast<int>(),
+      levelGrid: (fields[1] as List).cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, LevelsDb obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.currentLevel)
       ..writeByte(1)
-      ..write(obj.previousMovements);
+      ..write(obj.levelGrid)
+      ..writeByte(2)
+      ..write(obj.currentLevelMoves);
   }
 
   @override

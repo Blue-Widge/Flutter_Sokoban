@@ -1,16 +1,15 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:sokoban/Entity.dart';
 import 'Display.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'LevelsDb.dart';
-import 'Entity.dart';
-
+import 'gameData.dart';
 import 'Levels.dart';
 import 'BoxDb.dart';
+
 import 'Sound.dart';
 
-void main() async{
+void main() async
+{
   await Hive.initFlutter();
   Hive.registerAdapter(LevelsDbAdapter());
   boxDb = await Hive.openBox<LevelsDb>("boxDb");
