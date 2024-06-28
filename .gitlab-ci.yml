@@ -1,23 +1,42 @@
-image: cirrusci/flutter:latest
-
-before_script:
-  - flutter --version 2.10.0  # Specify the Flutter version directly
-  - flutter config --enable-web  # Enable web support if needed
-  - flutter doctor
-  - flutter pub get
+image: ubuntu:latest
 
 stages:
+  - setup
   - build
   - test
   - deploy
 
 variables:
-  DART_VERSION: "3.7.7"  # Specify the Dart SDK version here
+  FLUTTER_HOME: "/flutter"
+  PATH: "$FLUTTER_HOME/bin:$PATH"
+  DART_VERSION: "3.7.7"
+
+before_script:
+  - apt-get update && apt-get install -y \
+      git \
+      curl \
+      unzip \
+      xz-utils \
+      libglu1-mesa
+  - git clone https://github.com/flutter/flutter.git -b stable $FLUTTER_HOME
+  - flutter --version
+  - flutter config --dart $DART_VERSION
+  - flutter upgrade
+  - flutter config --enable-web
+  - flutter doctor
+  - flutter pub get
+
+setup-job:
+  stage: setup
+  script:
+    - echo "Setting up Flutter environment..."
+  artifacts:
+    paths:
+      - $FLUTTER_HOME
 
 build-job:
   stage: build
   script:
-    - flutter config --dart $DART_VERSION  # Set Dart SDK version
     - flutter build apk --release
   artifacts:
     paths:
@@ -26,14 +45,12 @@ build-job:
 unit-test-job:
   stage: test
   script:
-    - flutter config --dart $DART_VERSION  # Set Dart SDK version
     - flutter test
   allow_failure: true
 
 lint-test-job:
   stage: test
   script:
-    - flutter config --dart $DART_VERSION  # Set Dart SDK version
     - flutter analyze
   allow_failure: true
 
