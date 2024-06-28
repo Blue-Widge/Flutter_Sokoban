@@ -11,9 +11,13 @@ stages:
   - test
   - deploy
 
+variables:
+  DART_VERSION: "3.7.7"  # Specify the Dart SDK version here
+
 build-job:
   stage: build
   script:
+    - flutter config --dart $DART_VERSION  # Set Dart SDK version
     - flutter build apk --release
   artifacts:
     paths:
@@ -22,12 +26,14 @@ build-job:
 unit-test-job:
   stage: test
   script:
+    - flutter config --dart $DART_VERSION  # Set Dart SDK version
     - flutter test
   allow_failure: true
 
 lint-test-job:
   stage: test
   script:
+    - flutter config --dart $DART_VERSION  # Set Dart SDK version
     - flutter analyze
   allow_failure: true
 
