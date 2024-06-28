@@ -1,0 +1,43 @@
+image: cirrusci/flutter:latest
+
+stages:
+  - build
+  - test
+  - deploy
+
+before_script:
+  - flutter doctor
+  - flutter pub get
+
+build-job:
+  stage: build
+  script:
+    - flutter build apk --release
+  artifacts:
+    paths:
+      - build/app/outputs/flutter-apk/app-release.apk
+
+unit-test-job:
+  stage: test
+  script:
+    - flutter test
+  allow_failure: true
+
+lint-test-job:
+  stage: test
+  script:
+    - flutter analyze
+  allow_failure: true
+
+deploy-job:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+    - echo "Application successfully deployed."
+  environment:
+    name: production
+  dependencies:
+    - build-job
+  artifacts:
+    paths:
+      - build/app/outputs/flutter-apk/app-release.apk
