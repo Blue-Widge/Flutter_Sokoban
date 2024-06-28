@@ -6,6 +6,7 @@ stages:
   - deploy
 
 before_script:
+  - flutter channel dev
   - flutter upgrade
   - flutter config --enable-web
   - flutter doctor
