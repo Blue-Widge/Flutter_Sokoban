@@ -6,11 +6,11 @@ stages:
   - deploy
 
 before_script:
-  - flutter channel beta
-  - flutter upgrade
+  - flutter version 2.10.0  # Replace with the specific version you want to use
   - flutter config --enable-web  # Enable web support if needed
   - flutter doctor
   - flutter pub get
+
 
 build-job:
   stage: build
