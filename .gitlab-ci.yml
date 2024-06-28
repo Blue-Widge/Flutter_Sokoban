@@ -6,9 +6,9 @@ stages:
   - deploy
 
 before_script:
-  - flutter channel dev
+  - flutter channel beta
   - flutter upgrade
-  - flutter config --enable-web
+  - flutter config --enable-web  # Enable web support if needed
   - flutter doctor
   - flutter pub get
 
