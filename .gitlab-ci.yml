@@ -1,16 +1,15 @@
 image: cirrusci/flutter:latest
 
-stages:
-  - build
-  - test
-  - deploy
-
 before_script:
-  - flutter version 2.10.0  # Replace with the specific version you want to use
+  - flutter --version 2.10.0  # Specify the Flutter version directly
   - flutter config --enable-web  # Enable web support if needed
   - flutter doctor
   - flutter pub get
 
+stages:
+  - build
+  - test
+  - deploy
 
 build-job:
   stage: build
